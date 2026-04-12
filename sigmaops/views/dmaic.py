@@ -17,12 +17,17 @@ MODULES = ["grn", "bin", "picking", "dispatch", "inventory", "deadstock"]
 
 
 def render():
-    st.markdown("## ⚙️ DMAIC Project Engine")
     st.markdown(
-        "<span style='color:#8b949e'>Define → Measure → Analyze → Improve → Control</span>",
+        "<div class='module-header'>⚙️ DMAIC Project Engine</div>"
+        "<div class='module-subtitle'>Define → Measure → Analyze → Improve → Control</div>",
         unsafe_allow_html=True
     )
-    st.info("DMAIC is not a certificate. It is a daily discipline.")
+    st.markdown(
+        "<div style='background:rgba(0,212,170,0.08);border-left:3px solid #00d4aa;"
+        "padding:10px 14px;border-radius:6px;color:#00d4aa;font-size:13px;margin-bottom:16px'>"
+        "💡 DMAIC is not a certificate. It is a daily discipline.</div>",
+        unsafe_allow_html=True
+    )
     st.markdown("")
 
     # ── Project Overview Table ────────────────────────────────────────────────
@@ -209,7 +214,7 @@ def render():
             ))
         fig.update_layout(
             **{**{
-                "paper_bgcolor": "#161b22", "plot_bgcolor": "#161b22",
+                "paper_bgcolor": "#161b22", "plot_bgcolor": "#0d1117",
                 "font": dict(color="#e6edf3"), "margin": dict(l=20, r=20, t=30, b=20),
             }},
             height=max(200, len(df) * 50 + 80),

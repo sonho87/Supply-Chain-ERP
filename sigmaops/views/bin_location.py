@@ -10,23 +10,19 @@ from modules.db import (
     get_fix_checklists, update_fix_item,
 )
 
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                font=dict(color="#e6edf3"), margin=dict(l=20, r=20, t=30, b=20),
+CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
+                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
                 xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
                 yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
 
 
 def render():
-    st.markdown("## 🗂️ Bin Location Control")
-    st.markdown("<span style='color:#8b949e'>Eliminate stock mismatch through fixed bin system and audit discipline</span>",
-                unsafe_allow_html=True)
     st.markdown(
-        "<div style='background:rgba(245,158,11,0.1);border-left:3px solid #f59e0b;"
-        "padding:10px 14px;border-radius:6px;color:#f59e0b;font-size:13px'>"
-        "⚠️ Root Cause: Wrong bin mapping / no system update after movement</div>",
+        "<div class='module-header'>🗂️ Bin Location Control</div>"
+        "<div class='module-subtitle'>Eliminate stock mismatch through fixed bin system and audit discipline</div>"
+        "<div class='problem-box'>⚠️ Root Cause: Wrong bin mapping / no system update after movement</div>",
         unsafe_allow_html=True
     )
-    st.markdown("")
 
     # ── Zone Summary ─────────────────────────────────────────────────────────
     zone_df = get_zone_summary()

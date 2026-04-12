@@ -10,8 +10,8 @@ from modules.db import (
     get_fix_checklists, update_fix_item, insert_alert,
 )
 
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                font=dict(color="#e6edf3"), margin=dict(l=20, r=20, t=30, b=20),
+CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
+                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
                 xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
                 yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
 
@@ -19,16 +19,12 @@ CATEGORIES = ["All", "Electronics", "FMCG", "Apparel", "Pharma", "Auto Parts"]
 
 
 def render():
-    st.markdown("## 📉 Inventory Mismatch Control")
-    st.markdown("<span style='color:#8b949e'>System quantity must equal physical quantity — every SKU, every day</span>",
-                unsafe_allow_html=True)
     st.markdown(
-        "<div style='background:rgba(245,158,11,0.1);border-left:3px solid #f59e0b;"
-        "padding:10px 14px;border-radius:6px;color:#f59e0b;font-size:13px'>"
-        "⚠️ Root Cause: Process leakages at inward and picking — system ≠ physical</div>",
+        "<div class='module-header'>📉 Inventory Mismatch Control</div>"
+        "<div class='module-subtitle'>System quantity must equal physical quantity — every SKU, every day</div>"
+        "<div class='problem-box'>⚠️ Root Cause: Process leakages at inward and picking — system ≠ physical</div>",
         unsafe_allow_html=True
     )
-    st.markdown("")
 
     # ── Accuracy Gauge + Stats ────────────────────────────────────────────────
     accuracy = get_inventory_accuracy()
@@ -56,8 +52,8 @@ def render():
             },
             number={"font": {"color": color, "size": 36}, "suffix": "%"}
         ))
-        fig.update_layout(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                          font=dict(color="#e6edf3"), margin=dict(l=10, r=10, t=30, b=10),
+        fig.update_layout(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
+                          font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=10, r=10, t=30, b=10),
                           height=220)
         st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 

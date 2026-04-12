@@ -17,9 +17,9 @@ QUICK_PROMPTS = [
 
 
 def render():
-    st.markdown("## 🤖 AI Root Cause Assistant")
     st.markdown(
-        "<span style='color:#8b949e'>Six Sigma Black Belt + 20 years warehouse experience, on demand</span>",
+        "<div class='module-header'>🤖 AI Root Cause Assistant</div>"
+        "<div class='module-subtitle'>Six Sigma Black Belt + 20 years warehouse experience, on demand</div>",
         unsafe_allow_html=True
     )
     st.info(

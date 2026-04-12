@@ -11,8 +11,8 @@ from modules.db import (
 )
 from modules.kpi import format_inr_crore
 
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                font=dict(color="#e6edf3"), margin=dict(l=20, r=20, t=30, b=20),
+CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
+                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
                 xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
                 yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
 
@@ -26,16 +26,12 @@ ACTIONS = ["monitor", "discount", "liquidate", "write_off", "return_vendor"]
 
 
 def render():
-    st.markdown("## 💀 Dead Stock Control")
-    st.markdown("<span style='color:#8b949e'>Free up capital — every idle SKU has a cost</span>",
-                unsafe_allow_html=True)
     st.markdown(
-        "<div style='background:rgba(245,158,11,0.1);border-left:3px solid #f59e0b;"
-        "padding:10px 14px;border-radius:6px;color:#f59e0b;font-size:13px'>"
-        "⚠️ Root Cause: Over-ordering, no velocity tracking, no aging review process</div>",
+        "<div class='module-header'>💀 Dead Stock Control</div>"
+        "<div class='module-subtitle'>Free up capital — every idle SKU has a cost</div>"
+        "<div class='problem-box'>⚠️ Root Cause: Over-ordering, no velocity tracking, no aging review process</div>",
         unsafe_allow_html=True
     )
-    st.markdown("")
 
     # ── Capital at Risk Overview ──────────────────────────────────────────────
     summary = get_dead_stock_summary()

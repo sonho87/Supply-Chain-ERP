@@ -15,24 +15,20 @@ VENDORS = [
     "Walmart India", "D-Mart", "Big Bazaar Wholesale"
 ]
 
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                font=dict(color="#e6edf3"), margin=dict(l=20, r=20, t=30, b=20),
+CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
+                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
                 xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
                 yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
 
 
 def render():
     # ── Header ───────────────────────────────────────────────────────────────
-    st.markdown("## 📦 GRN / Goods Inward Control")
-    st.markdown("<span style='color:#8b949e'>Eliminate wrong quantity and wrong SKU entry at source</span>",
-                unsafe_allow_html=True)
     st.markdown(
-        "<div style='background:rgba(245,158,11,0.1);border-left:3px solid #f59e0b;"
-        "padding:10px 14px;border-radius:6px;color:#f59e0b;font-size:13px'>"
-        "⚠️ Root Cause: Manual entry errors, no 2-step verification</div>",
+        "<div class='module-header'>📦 GRN / Goods Inward Control</div>"
+        "<div class='module-subtitle'>Eliminate wrong quantity and wrong SKU entry at source</div>"
+        "<div class='problem-box'>⚠️ Root Cause: Manual entry errors, no 2-step verification</div>",
         unsafe_allow_html=True
     )
-    st.markdown("")
 
     # ── Section B: Today Stats ───────────────────────────────────────────────
     stats = get_grn_stats_today()

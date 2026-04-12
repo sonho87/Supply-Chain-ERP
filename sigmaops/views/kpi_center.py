@@ -12,8 +12,8 @@ from modules.db import (
 )
 from modules.kpi import format_inr_crore
 
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                font=dict(color="#e6edf3"), margin=dict(l=20, r=20, t=30, b=20),
+CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
+                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
                 xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
                 yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
 
@@ -34,9 +34,11 @@ def kpi_trend_chart(snap_df, field, color, target, target_label, height=200):
 
 
 def render():
-    st.markdown("## 📈 KPI Command Center")
     st.markdown(
-        "<span style='color:#8b949e'>If you're not tracking these, you're not managing a warehouse — you're firefighting.</span>",
+        "<div class='module-header'>📈 KPI Command Center</div>"
+        "<div class='module-subtitle'>"
+        "If you're not tracking these, you're not managing a warehouse — you're firefighting."
+        "</div>",
         unsafe_allow_html=True
     )
 

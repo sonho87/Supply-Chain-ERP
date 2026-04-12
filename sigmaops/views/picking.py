@@ -9,23 +9,19 @@ from modules.db import (
     get_picking_error_by_sku, get_fix_checklists, update_fix_item,
 )
 
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                font=dict(color="#e6edf3"), margin=dict(l=20, r=20, t=30, b=20),
+CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
+                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
                 xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
                 yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
 
 
 def render():
-    st.markdown("## ✅ Picking Error Control")
-    st.markdown("<span style='color:#8b949e'>Zero defect picking — right item, right bin, right quantity, first time</span>",
-                unsafe_allow_html=True)
     st.markdown(
-        "<div style='background:rgba(245,158,11,0.1);border-left:3px solid #f59e0b;"
-        "padding:10px 14px;border-radius:6px;color:#f59e0b;font-size:13px'>"
-        "⚠️ Root Cause: Similar SKUs, time pressure, no barcode verification</div>",
+        "<div class='module-header'>✅ Picking Error Control</div>"
+        "<div class='module-subtitle'>Zero defect picking — right item, right bin, right quantity, first time</div>"
+        "<div class='problem-box'>⚠️ Root Cause: Similar SKUs, time pressure, no barcode verification</div>",
         unsafe_allow_html=True
     )
-    st.markdown("")
 
     # ── Live Pick Stats ───────────────────────────────────────────────────────
     stats = get_picking_stats_today()
