@@ -1,4 +1,15 @@
 """SigmaOps ERP — Main Entry Point."""
+import sys
+import os
+
+# ── Fix working directory for Streamlit Cloud ─────────────────────────────────
+# Streamlit Cloud CWD is repo root; we need sigmaops/ on the path so that
+# `from modules.xxx` and `from views.xxx` resolve correctly.
+_app_dir = os.path.dirname(os.path.abspath(__file__))
+if _app_dir not in sys.path:
+    sys.path.insert(0, _app_dir)
+os.chdir(_app_dir)
+
 import streamlit as st
 from streamlit_option_menu import option_menu
 from datetime import datetime
