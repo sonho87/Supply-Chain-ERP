@@ -76,11 +76,11 @@ def render():
             unsafe_allow_html=True
         )
         st.plotly_chart(kpi_trend_chart(snap_df, "picking_accuracy_pct", "#00d4aa", 99.5, "Target 99.5%"),
-                        use_container_width=True, config={"displayModeBar": False})
+                        width='stretch', config={"displayModeBar": False})
         st.markdown("**Drill-down: Accuracy by Picker (Last 7 Days)**")
         perf_df = get_picker_performance()
         if not perf_df.empty:
-            st.dataframe(perf_df.head(10), use_container_width=True, hide_index=True)
+            st.dataframe(perf_df.head(10), width='stretch', hide_index=True)
 
     # ── KPI 2: Inventory Accuracy ─────────────────────────────────────────────
     with st.expander("📊 KPI 2: Inventory Accuracy %", expanded=True):
@@ -101,14 +101,14 @@ def render():
             unsafe_allow_html=True
         )
         st.plotly_chart(kpi_trend_chart(snap_df, "inventory_accuracy_pct", "#3b82f6", 98.0, "Target 98%"),
-                        use_container_width=True, config={"displayModeBar": False})
+                        width='stretch', config={"displayModeBar": False})
         st.markdown("**Drill-down: Accuracy by Category**")
         inv_df = get_all_inventory()
         if not inv_df.empty:
             cat_acc = inv_df.groupby("category").apply(
                 lambda x: round(len(x[x["status"] == "matched"]) / len(x) * 100, 1)
             ).reset_index(name="accuracy_pct")
-            st.dataframe(cat_acc, use_container_width=True, hide_index=True)
+            st.dataframe(cat_acc, width='stretch', hide_index=True)
 
     # ── KPI 3: GRN Error % ────────────────────────────────────────────────────
     with st.expander("📊 KPI 3: GRN Error %", expanded=True):
@@ -135,7 +135,7 @@ def render():
             fig_grn.add_hline(y=2.0, line_dash="dash", line_color="#22c55e",
                                annotation_text="Target 2%")
             fig_grn.update_layout(**CHART_BG, height=200)
-            st.plotly_chart(fig_grn, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig_grn, width='stretch', config={"displayModeBar": False})
 
         st.markdown("**Drill-down: Error Rate by Vendor**")
         grn_df = get_all_grn()
@@ -143,7 +143,7 @@ def render():
             vendor_err = grn_df.groupby("vendor").apply(
                 lambda x: round(len(x[x["status"].isin(["flagged", "rejected"])]) / len(x) * 100, 1)
             ).reset_index(name="error_pct").sort_values("error_pct", ascending=False)
-            st.dataframe(vendor_err, use_container_width=True, hide_index=True)
+            st.dataframe(vendor_err, width='stretch', hide_index=True)
 
     # ── KPI 4: Dispatch TAT ───────────────────────────────────────────────────
     with st.expander("📊 KPI 4: Dispatch TAT (hours)", expanded=True):
@@ -164,11 +164,11 @@ def render():
             unsafe_allow_html=True
         )
         st.plotly_chart(kpi_trend_chart(snap_df, "dispatch_tat_hours", "#7c3aed", 24.0, "Target 24h"),
-                        use_container_width=True, config={"displayModeBar": False})
+                        width='stretch', config={"displayModeBar": False})
         st.markdown("**Drill-down: TAT by Carrier**")
         carrier_df = get_delay_by_carrier()
         if not carrier_df.empty:
-            st.dataframe(carrier_df, use_container_width=True, hide_index=True)
+            st.dataframe(carrier_df, width='stretch', hide_index=True)
 
     # ── KPI 5: Dead Stock Value ───────────────────────────────────────────────
     with st.expander("📊 KPI 5: Dead Stock Value (₹)", expanded=True):
@@ -200,7 +200,7 @@ def render():
                 fill="tozeroy", fillcolor="rgba(239,68,68,0.08)"
             ))
             fig_ds.update_layout(**CHART_BG, height=200, yaxis_title="₹ Crore")
-            st.plotly_chart(fig_ds, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig_ds, width='stretch', config={"displayModeBar": False})
 
     st.divider()
 
@@ -219,7 +219,7 @@ def render():
             ("Dead Stock Value", "Decreasing", format_inr_crore(latest.get("dead_stock_value", 0)), "🟡"),
         ]
         scorecard_df = pd.DataFrame(kpi_data, columns=["KPI", "Target", "Current", "Status"])
-        st.dataframe(scorecard_df, use_container_width=True, hide_index=True)
+        st.dataframe(scorecard_df, width='stretch', hide_index=True)
 
     st.divider()
 

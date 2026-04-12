@@ -49,7 +49,7 @@ def render():
         st.dataframe(
             active_df[["order_id", "sku", "sku_description", "required_qty",
                         "picked_qty", "bin_code", "picker_id", "pick_method", "status"]],
-            use_container_width=True, hide_index=True
+            width='stretch', hide_index=True
         )
         qa1, qa2, qa3, qa4 = st.columns(4)
         with qa1:
@@ -138,7 +138,7 @@ def render():
                 orientation="h", marker_color="#ef4444"
             ))
             fig.update_layout(**CHART_BG, height=280, title="Top SKUs with Picking Errors")
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     with ch2:
         all_picks = get_all_picking_orders(["error"])
@@ -151,7 +151,7 @@ def render():
                 marker_colors=["#ef4444", "#f59e0b", "#7c3aed"]
             ))
             fig2.update_layout(**CHART_BG, height=280, title="Error Type Breakdown", showlegend=True)
-            st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig2, width='stretch', config={"displayModeBar": False})
 
     st.divider()
 
@@ -176,7 +176,7 @@ def render():
                                       "Recommended Fix": "Color code + separate bin zones"})
         if pairs:
             pairs_df = pd.DataFrame(pairs).sort_values("Error Count", ascending=False).head(10)
-            st.dataframe(pairs_df, use_container_width=True, hide_index=True)
+            st.dataframe(pairs_df, width='stretch', hide_index=True)
         else:
             st.info("No confusion-prone SKU pairs detected.")
 
@@ -187,7 +187,7 @@ def render():
     st.caption("Use for coaching, not punishment — errors often indicate systemic issues.")
     perf_df = get_picker_performance()
     if not perf_df.empty:
-        st.dataframe(perf_df, use_container_width=True, hide_index=True)
+        st.dataframe(perf_df, width='stretch', hide_index=True)
 
     st.divider()
 

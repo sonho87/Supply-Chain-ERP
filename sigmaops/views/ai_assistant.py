@@ -107,8 +107,8 @@ def render():
         )
     with btn_col:
         st.markdown("<div style='margin-top:8px'>", unsafe_allow_html=True)
-        send_clicked = st.button("Send", type="primary", use_container_width=True)
-        clear_clicked = st.button("Clear", use_container_width=True)
+        send_clicked = st.button("Send", type="primary", width='stretch')
+        clear_clicked = st.button("Clear", width='stretch')
         st.markdown("</div>", unsafe_allow_html=True)
 
     if send_clicked and user_input.strip():

@@ -109,7 +109,7 @@ def render():
                 barmode="stack",
                 legend=dict(bgcolor="#21262d", bordercolor="#30363d"),
             )
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     with ch2:
         snap_df = get_kpi_snapshots(30)
@@ -122,7 +122,7 @@ def render():
                 fill="tozeroy", fillcolor="rgba(239,68,68,0.08)"
             ))
             fig2.update_layout(**CHART_BG, height=280, title="Dead Stock Trend (₹Cr)")
-            st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig2, width='stretch', config={"displayModeBar": False})
 
     st.divider()
 
@@ -147,7 +147,7 @@ def render():
             ds_df[["sku", "description", "category", "warehouse_location", "qty_on_hand",
                     "unit_cost", "total_value", "last_movement_date", "days_no_movement",
                     "aging_bucket", "recommended_action", "status"]],
-            use_container_width=True, hide_index=True
+            width='stretch', hide_index=True
         )
         csv = ds_df.to_csv(index=False)
         st.download_button("⬇ Export CSV", csv, "dead_stock.csv", "text/csv")

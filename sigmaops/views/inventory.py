@@ -55,7 +55,7 @@ def render():
         fig.update_layout(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
                           font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=10, r=10, t=30, b=10),
                           height=220)
-        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     with g2:
         st.markdown("<div class='sigma-card'>", unsafe_allow_html=True)
@@ -144,7 +144,7 @@ def render():
         st.dataframe(
             inv_df[["sku", "description", "category", "system_qty", "physical_qty",
                      "variance", "variance_pct", "status", "root_cause", "last_cycle_count"]],
-            use_container_width=True, hide_index=True
+            width='stretch', hide_index=True
         )
         csv = inv_df.to_csv(index=False)
         st.download_button("⬇ Export CSV", csv, "inventory_variance.csv", "text/csv")
@@ -183,7 +183,7 @@ def render():
         st.dataframe(
             rc_df[["issue_description", "root_cause", "corrective_action",
                     "logged_by", "status", "created_at"]],
-            use_container_width=True, hide_index=True
+            width='stretch', hide_index=True
         )
         close_id = st.number_input("Close Log ID", min_value=1, step=1, key="inv_close_id")
         if st.button("Close Root Cause"):

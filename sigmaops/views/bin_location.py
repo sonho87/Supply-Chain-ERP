@@ -88,7 +88,7 @@ def render():
             title=f"Zone {zone_sel} Bin Layout",
             xaxis_title="Aisle", yaxis_title="Rack/Level",
         )
-        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
         legend_cols = st.columns(4)
         for i, (status, color) in enumerate(status_color.items()):
@@ -112,7 +112,7 @@ def render():
         st.dataframe(
             mismatch_df[["bin_code", "zone", "sku", "mapped_qty", "actual_qty",
                           "variance", "last_audited", "abc_class", "status"]],
-            use_container_width=True, hide_index=True
+            width='stretch', hide_index=True
         )
         act_c1, act_c2, act_c3 = st.columns(3)
         with act_c1:

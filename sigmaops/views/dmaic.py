@@ -44,7 +44,7 @@ def render():
         display_cols = ["project_name", "module", "current_phase", "owner",
                         "baseline_value", "target_value", "current_value", "status", "progress_pct"]
         existing = [c for c in display_cols if c in df.columns]
-        st.dataframe(df[existing], use_container_width=True, hide_index=True)
+        st.dataframe(df[existing], width='stretch', hide_index=True)
 
     st.divider()
 
@@ -223,4 +223,4 @@ def render():
             yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
             title="DMAIC Projects — Completion Progress"
         )
-        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})

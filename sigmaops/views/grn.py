@@ -99,7 +99,7 @@ def render():
                 pending_df[["grn_number", "sku", "vendor", "expected_qty",
                              "received_qty", "discrepancy", "verified_step1",
                              "verified_step2", "status"]],
-                use_container_width=True, hide_index=True
+                width='stretch', hide_index=True
             )
             st.markdown("**Quick Actions:**")
             act_cols = st.columns(4)
@@ -144,7 +144,7 @@ def render():
         st.dataframe(
             grn_df[["grn_number", "sku", "vendor", "expected_qty", "received_qty",
                      "discrepancy", "entry_method", "status", "created_at"]],
-            use_container_width=True, hide_index=True
+            width='stretch', hide_index=True
         )
         csv = grn_df.to_csv(index=False)
         st.download_button("⬇ Export CSV", csv, "grn_entries.csv", "text/csv")
@@ -163,7 +163,7 @@ def render():
             fig.add_hline(y=2.0, line_dash="dash", line_color="#22c55e",
                           annotation_text="Target 2%", annotation_font_color="#22c55e")
             fig.update_layout(**CHART_BG, height=250, title="GRN Error Rate (14 Days)")
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     with chart2:
         if not grn_df.empty:
@@ -180,7 +180,7 @@ def render():
                 ))
                 fig2.update_layout(**CHART_BG, height=250, title="Error Type Breakdown",
                                    showlegend=True)
-                st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+                st.plotly_chart(fig2, width='stretch', config={"displayModeBar": False})
 
     # ── Section G: Entry Method Comparison ───────────────────────────────────
     st.markdown("### Entry Method Comparison")

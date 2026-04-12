@@ -107,7 +107,7 @@ def render():
             if not snaps7.empty and field in snaps7.columns:
                 st.plotly_chart(
                     _sparkline(snaps7[field].tolist(), color),
-                    use_container_width=True,
+                    width='stretch',
                     config={"displayModeBar": False},
                     key=f"spark_{i}"
                 )
@@ -280,7 +280,7 @@ def render():
             fig.add_hline(y=2.0, line_dash="dash", line_color="#22c55e",
                           annotation_text="Target 2%", annotation_font_color="#22c55e")
             fig.update_layout(**_chart_layout(height=220))
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     with bc2:
         st.markdown("**Inventory vs Picking Accuracy — Last 14 Days**")
@@ -295,4 +295,4 @@ def render():
                 mode="lines", name="Picking", line=dict(color="#00d4aa", width=2.5)
             ))
             fig2.update_layout(**_chart_layout(height=220))
-            st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig2, width='stretch', config={"displayModeBar": False})

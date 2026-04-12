@@ -103,7 +103,7 @@ def render():
                 barmode="stack",
                 legend=dict(bgcolor="#21262d", bordercolor="#30363d"),
             )
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     st.divider()
 
@@ -156,7 +156,7 @@ def render():
                 orientation="h", marker_color="#ef4444"
             ))
             fig.update_layout(**CHART_BG, height=250, title="Avg Delay by Carrier (mins)")
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     with da2:
         reasons = {
@@ -182,7 +182,7 @@ def render():
             showlegend=True,
             legend=dict(bgcolor="#21262d", bordercolor="#30363d"),
         )
-        st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig2, width='stretch', config={"displayModeBar": False})
 
     # ── TAT Trend ─────────────────────────────────────────────────────────────
     st.markdown("### TAT Trend — Last 14 Days")
@@ -198,7 +198,7 @@ def render():
         fig3.add_hline(y=24, line_dash="dash", line_color="#22c55e",
                        annotation_text="Target 24h")
         fig3.update_layout(**CHART_BG, height=220)
-        st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig3, width='stretch', config={"displayModeBar": False})
 
     st.divider()
 
