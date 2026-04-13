@@ -9,6 +9,7 @@ from modules.db import (
     get_root_cause_log, insert_root_cause, update_root_cause_status,
     get_fix_checklists, update_fix_item, insert_alert,
 )
+from modules.theme import inject_css
 
 CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
                 font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
@@ -19,6 +20,7 @@ CATEGORIES = ["All", "Electronics", "FMCG", "Apparel", "Pharma", "Auto Parts"]
 
 
 def render():
+    inject_css()
     st.markdown(
         "<div class='module-header'>📉 Inventory Mismatch Control</div>"
         "<div class='module-subtitle'>System quantity must equal physical quantity — every SKU, every day</div>"

@@ -9,6 +9,7 @@ from modules.db import (
     update_bin_mapping, update_bin_audited, insert_bin,
     get_fix_checklists, update_fix_item,
 )
+from modules.theme import inject_css
 
 CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
                 font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
@@ -17,6 +18,7 @@ CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
 
 
 def render():
+    inject_css()
     st.markdown(
         "<div class='module-header'>🗂️ Bin Location Control</div>"
         "<div class='module-subtitle'>Eliminate stock mismatch through fixed bin system and audit discipline</div>"

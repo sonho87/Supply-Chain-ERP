@@ -8,6 +8,7 @@ from modules.db import (
     update_dispatch_status, get_delay_by_carrier,
     get_fix_checklists, update_fix_item,
 )
+from modules.theme import inject_css
 
 CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
                 font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
@@ -19,6 +20,7 @@ STATUS_NEXT = {"pending": "staged", "staged": "loading", "loading": "dispatched"
 
 
 def render():
+    inject_css()
     st.markdown(
         "<div class='module-header'>🚛 Dispatch Control</div>"
         "<div class='module-subtitle'>On-time dispatch every time — no exceptions, no excuses</div>"

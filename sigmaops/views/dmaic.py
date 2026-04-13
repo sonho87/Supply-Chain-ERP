@@ -7,6 +7,7 @@ from modules.db import (
     get_all_dmaic_projects, get_dmaic_project,
     update_dmaic_phase, insert_dmaic_project,
 )
+from modules.theme import inject_css
 
 PHASE_ORDER = ["define", "measure", "analyze", "improve", "control"]
 PHASE_COLORS = {
@@ -17,6 +18,7 @@ MODULES = ["grn", "bin", "picking", "dispatch", "inventory", "deadstock"]
 
 
 def render():
+    inject_css()
     st.markdown(
         "<div class='module-header'>⚙️ DMAIC Project Engine</div>"
         "<div class='module-subtitle'>Define → Measure → Analyze → Improve → Control</div>",

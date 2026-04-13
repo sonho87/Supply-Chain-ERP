@@ -12,6 +12,7 @@ from modules.kpi import (
     calc_grn_error_delta, calc_dispatch_tat_delta, calc_dead_stock_delta,
     format_inr_crore, get_module_fix_progress,
 )
+from modules.theme import inject_css
 
 _CL = dict(
     paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
@@ -48,6 +49,7 @@ def _chart_layout(**kwargs):
 
 
 def render():
+    inject_css()
     # ── Page title ────────────────────────────────────────────────────────────
     st.markdown(
         "<div style='font-family:Syne,sans-serif;font-size:24px;font-weight:700;"

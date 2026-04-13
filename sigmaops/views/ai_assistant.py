@@ -4,6 +4,7 @@ import pandas as pd
 
 from modules.ai_assistant import get_ai_response, extract_root_cause_from_response
 from modules.db import insert_root_cause
+from modules.theme import inject_css
 
 
 QUICK_PROMPTS = [
@@ -17,6 +18,7 @@ QUICK_PROMPTS = [
 
 
 def render():
+    inject_css()
     st.markdown(
         "<div class='module-header'>🤖 AI Root Cause Assistant</div>"
         "<div class='module-subtitle'>Six Sigma Black Belt + 20 years warehouse experience, on demand</div>",

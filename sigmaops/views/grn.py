@@ -9,6 +9,7 @@ from modules.db import (
     insert_grn_entry, update_grn_verification, update_grn_status,
     get_grn_error_trend, get_fix_checklists, update_fix_item,
 )
+from modules.theme import inject_css
 
 VENDORS = [
     "Reliance Retail", "Tata CLiQ", "Metro Cash and Carry",
@@ -22,6 +23,7 @@ CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
 
 
 def render():
+    inject_css()
     # ── Header ───────────────────────────────────────────────────────────────
     st.markdown(
         "<div class='module-header'>📦 GRN / Goods Inward Control</div>"

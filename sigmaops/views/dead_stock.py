@@ -10,6 +10,7 @@ from modules.db import (
     get_fix_checklists, update_fix_item,
 )
 from modules.kpi import format_inr_crore
+from modules.theme import inject_css
 
 CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
                 font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
@@ -26,6 +27,7 @@ ACTIONS = ["monitor", "discount", "liquidate", "write_off", "return_vendor"]
 
 
 def render():
+    inject_css()
     st.markdown(
         "<div class='module-header'>💀 Dead Stock Control</div>"
         "<div class='module-subtitle'>Free up capital — every idle SKU has a cost</div>"

@@ -14,6 +14,7 @@ from datetime import datetime
 
 from modules.db import init_db
 from modules import seed
+from modules.theme import inject_css, THEME_OPTS, LABEL_TO_KEY, KEY_TO_LABEL
 
 # ── Page Config (MUST be first Streamlit call) ────────────────────────────────
 st.set_page_config(
@@ -27,288 +28,310 @@ st.set_page_config(
 init_db()
 seed.run_seed()
 
-# ── Theme — initialize and read from session_state ────────────────────────────
-# Streamlit updates the widget key in session_state BEFORE the rerun,
-# so reading it here gives the newly-selected value immediately.
-_THEME_OPTS = ["🌙 Dark", "☀️ Light", "💻 System"]
-if "theme_choice" not in st.session_state:
-    st.session_state["theme_choice"] = "🌙 Dark"
+# ── Theme state — initialize once ────────────────────────────────────────────
+if "theme" not in st.session_state:
+    st.session_state["theme"] = "dark"
 
-_tl = st.session_state.get("theme_choice", "🌙 Dark")
-_theme = {"🌙 Dark": "dark", "☀️ Light": "light", "💻 System": "system"}.get(_tl, "dark")
-
-# ── CSS variable blocks ───────────────────────────────────────────────────────
-_DARK = (
-    "--bg:#0a0a0f;--surface:#161b22;--surface2:#21262d;--border:#30363d;"
-    "--accent:#00d4aa;--danger:#ef4444;--warning:#f59e0b;--success:#22c55e;"
-    "--text:#e6edf3;--text2:#8b949e;--sidebar:#0d1117;"
-)
-_LIGHT = (
-    "--bg:#f8fafc;--surface:#ffffff;--surface2:#f1f5f9;--border:#e2e8f0;"
-    "--accent:#00b894;--danger:#dc2626;--warning:#d97706;--success:#16a34a;"
-    "--text:#0f172a;--text2:#64748b;--sidebar:#f1f5f9;"
-)
-
-if _theme == "dark":
-    _vars = f":root{{{_DARK}}}"
-elif _theme == "light":
-    _vars = f":root{{{_LIGHT}}}"
-else:  # system — dark default, light via media query
-    _vars = f":root{{{_DARK}}}@media(prefers-color-scheme:light){{:root{{{_LIGHT}}}}}"
-
-# ── Google Fonts (separate from <style> to avoid parse issues) ────────────────
+# ── Google Fonts ──────────────────────────────────────────────────────────────
 st.markdown(
     '<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800'
     '&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">',
     unsafe_allow_html=True,
 )
 
-# ── Full CSS — injected as a single <style> block ─────────────────────────────
-st.markdown(f"""<style>
-{_vars}
+# ── Inject theme CSS variables (:root block) ──────────────────────────────────
+# inject_css() reads st.session_state["theme"] which is already set correctly
+# by the on_change callback before Streamlit reruns the script.
+inject_css()
 
+# ── Full component CSS (no :root — that comes from inject_css above) ──────────
+st.markdown("""<style>
 /* ── Global reset ──────────────────────────── */
-*{{box-sizing:border-box;}}
-html,body,.stApp{{
-    background-color:var(--bg)!important;
-    color:var(--text)!important;
-    font-family:'DM Sans',sans-serif!important;
-}}
+* { box-sizing: border-box; }
+html, body, .stApp {
+    background-color: var(--bg) !important;
+    color: var(--text) !important;
+    font-family: 'DM Sans', sans-serif !important;
+}
 
 /* ── Hide default Streamlit chrome ─────────── */
-#MainMenu{{visibility:hidden!important;}}
-footer{{visibility:hidden!important;}}
-header{{visibility:hidden!important;}}
-[data-testid="stHeader"]{{display:none!important;}}
-[data-testid="stToolbar"]{{display:none!important;}}
-[data-testid="stDecoration"]{{display:none!important;}}
-.stDeployButton{{display:none!important;}}
-[data-testid="collapsedControl"]{{color:var(--accent)!important;}}
-[data-testid="stSidebarNav"]{{display:none!important;}}
-.st-emotion-cache-1rtdyuf{{display:none!important;}}
-.st-emotion-cache-qdbtli{{display:none!important;}}
-nav[data-testid="stSidebarNav"]{{display:none!important;}}
+#MainMenu { visibility: hidden !important; }
+footer { visibility: hidden !important; }
+header { visibility: hidden !important; }
+[data-testid="stHeader"] { display: none !important; }
+[data-testid="stToolbar"] { display: none !important; }
+[data-testid="stDecoration"] { display: none !important; }
+.stDeployButton { display: none !important; }
+[data-testid="collapsedControl"] { color: var(--accent) !important; }
+[data-testid="stSidebarNav"] { display: none !important; }
+.st-emotion-cache-1rtdyuf { display: none !important; }
+.st-emotion-cache-qdbtli  { display: none !important; }
+nav[data-testid="stSidebarNav"] { display: none !important; }
 
 /* ── Main block padding ────────────────────── */
-.block-container{{
-    padding-top:0.5rem!important;
-    padding-bottom:2rem!important;
-    padding-left:1.5rem!important;
-    padding-right:1.5rem!important;
-    max-width:100%!important;
-}}
+.block-container {
+    padding-top: 0.5rem !important;
+    padding-bottom: 2rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    max-width: 100% !important;
+}
 
 /* ── Sidebar ───────────────────────────────── */
-[data-testid="stSidebar"]{{
-    background-color:var(--sidebar)!important;
-    border-right:1px solid var(--border)!important;
-}}
-[data-testid="stSidebar"]>div:first-child{{padding-top:0!important;}}
+[data-testid="stSidebar"] {
+    background-color: var(--sidebar) !important;
+    border-right: 1px solid var(--border) !important;
+}
+[data-testid="stSidebar"] > div:first-child { padding-top: 0 !important; }
 
 /* ── Metric cards ──────────────────────────── */
-[data-testid="stMetric"],[data-testid="metric-container"]{{
-    background:var(--surface)!important;
-    border:1px solid var(--border)!important;
-    border-top:3px solid var(--accent)!important;
-    border-radius:10px!important;
-    padding:16px 18px 12px!important;
-}}
-[data-testid="stMetricLabel"]{{
-    font-family:'DM Sans',sans-serif!important;
-    font-size:12px!important;
-    color:var(--text2)!important;
-    text-transform:uppercase;
-    letter-spacing:0.6px;
-}}
-[data-testid="stMetricValue"]{{
-    font-family:'Syne',sans-serif!important;
-    font-size:28px!important;
-    font-weight:700!important;
-    color:var(--text)!important;
-}}
-[data-testid="stMetricDelta"] svg{{display:inline!important;}}
+[data-testid="stMetric"],
+[data-testid="metric-container"] {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-top: 3px solid var(--accent) !important;
+    border-radius: 10px !important;
+    padding: 16px 18px 12px !important;
+}
+[data-testid="stMetricLabel"] {
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 12px !important;
+    color: var(--text2) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+[data-testid="stMetricValue"] {
+    font-family: 'Syne', sans-serif !important;
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    color: var(--text) !important;
+}
+[data-testid="stMetricDelta"] svg { display: inline !important; }
 
 /* ── Dataframes ────────────────────────────── */
-[data-testid="stDataFrame"],[data-testid="stDataFrameContainer"],[data-testid="dataframe"]{{
-    background:var(--surface)!important;
-    border:1px solid var(--border)!important;
-    border-radius:8px!important;
-}}
-.dataframe,.stDataFrame{{font-size:12px!important;}}
-.dataframe thead th,thead tr th{{
-    background:var(--surface2)!important;
-    color:var(--accent)!important;
-    font-size:11px!important;font-weight:600!important;
-    text-transform:uppercase!important;letter-spacing:0.5px!important;
-    padding:8px 12px!important;
-    border-bottom:1px solid var(--border)!important;
-}}
-.dataframe tbody tr:hover{{background:rgba(0,212,170,0.04)!important;}}
-.dataframe tbody td{{
-    color:var(--text)!important;padding:7px 12px!important;
-    border-bottom:1px solid rgba(48,54,61,0.5)!important;
-}}
+[data-testid="stDataFrame"],
+[data-testid="stDataFrameContainer"],
+[data-testid="dataframe"] {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+}
+.dataframe, .stDataFrame { font-size: 12px !important; }
+.dataframe thead th, thead tr th {
+    background: var(--surface2) !important;
+    color: var(--accent) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 8px 12px !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+.dataframe tbody tr:hover { background: rgba(0,212,170,0.04) !important; }
+.dataframe tbody td {
+    color: var(--text) !important;
+    padding: 7px 12px !important;
+    border-bottom: 1px solid rgba(48,54,61,0.5) !important;
+}
 
 /* ── Buttons ───────────────────────────────── */
-.stButton>button{{
-    background:var(--accent)!important;color:#000!important;
-    border:none!important;border-radius:6px!important;
-    font-weight:600!important;font-size:13px!important;
-    padding:6px 16px!important;transition:background 0.15s ease!important;
-}}
-.stButton>button:hover{{background:#00b894!important;border:none!important;}}
-.stButton>button:focus{{
-    box-shadow:0 0 0 2px rgba(0,212,170,0.4)!important;border:none!important;
-}}
-.stButton>button[kind="secondary"],.stButton>button.secondary{{
-    background:var(--surface2)!important;
-    color:var(--text)!important;
-    border:1px solid var(--border)!important;
-}}
+.stButton > button {
+    background: var(--accent) !important;
+    color: #000 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    padding: 6px 16px !important;
+    transition: background 0.15s ease !important;
+}
+.stButton > button:hover { background: #00b894 !important; border: none !important; }
+.stButton > button:focus {
+    box-shadow: 0 0 0 2px rgba(0,212,170,0.4) !important;
+    border: none !important;
+}
+.stButton > button[kind="secondary"],
+.stButton > button.secondary {
+    background: var(--surface2) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+}
 
 /* ── Form inputs ───────────────────────────── */
-.stTextInput>div>div>input,.stNumberInput>div>div>input,
-.stTextArea>div>div>textarea,input[type="text"],input[type="number"],textarea{{
-    background:var(--surface2)!important;color:var(--text)!important;
-    border:1px solid var(--border)!important;border-radius:6px!important;
-    font-family:'DM Sans',sans-serif!important;
-}}
-.stTextInput>div>div>input:focus,.stNumberInput>div>div>input:focus,
-.stTextArea>div>div>textarea:focus{{
-    border-color:var(--accent)!important;
-    box-shadow:0 0 0 2px rgba(0,212,170,0.2)!important;
-}}
+.stTextInput > div > div > input,
+.stNumberInput > div > div > input,
+.stTextArea > div > div > textarea,
+input[type="text"], input[type="number"], textarea {
+    background: var(--surface2) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 6px !important;
+    font-family: 'DM Sans', sans-serif !important;
+}
+.stTextInput > div > div > input:focus,
+.stNumberInput > div > div > input:focus,
+.stTextArea > div > div > textarea:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 2px rgba(0,212,170,0.2) !important;
+}
 
 /* ── Selectbox / Multiselect ───────────────── */
-.stSelectbox>div>div,.stMultiSelect>div>div{{
-    background:var(--surface2)!important;border:1px solid var(--border)!important;
-    border-radius:6px!important;color:var(--text)!important;
-}}
+.stSelectbox > div > div,
+.stMultiSelect > div > div {
+    background: var(--surface2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 6px !important;
+    color: var(--text) !important;
+}
 
 /* ── Expander ──────────────────────────────── */
-.streamlit-expanderHeader,[data-testid="stExpander"]>div:first-child{{
-    background:var(--surface)!important;border:1px solid var(--border)!important;
-    border-radius:8px!important;color:var(--text)!important;font-weight:500!important;
-}}
-[data-testid="stExpander"]{{
-    border:1px solid var(--border)!important;border-radius:8px!important;
-    background:var(--surface)!important;
-}}
+.streamlit-expanderHeader,
+[data-testid="stExpander"] > div:first-child {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    color: var(--text) !important;
+    font-weight: 500 !important;
+}
+[data-testid="stExpander"] {
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    background: var(--surface) !important;
+}
 
 /* ── Alerts ────────────────────────────────── */
-.stAlert,[data-testid="stAlert"]{{
-    background:var(--surface)!important;border-radius:8px!important;
-    border:1px solid var(--border)!important;
-}}
-.stInfo{{border-left:3px solid #3b82f6!important;}}
-.stWarning{{border-left:3px solid var(--warning)!important;}}
-.stError{{border-left:3px solid var(--danger)!important;}}
-.stSuccess{{border-left:3px solid var(--success)!important;}}
+.stAlert, [data-testid="stAlert"] {
+    background: var(--surface) !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--border) !important;
+}
+.stInfo    { border-left: 3px solid #3b82f6 !important; }
+.stWarning { border-left: 3px solid var(--warning) !important; }
+.stError   { border-left: 3px solid var(--danger) !important; }
+.stSuccess { border-left: 3px solid var(--success) !important; }
 
 /* ── Progress bar ──────────────────────────── */
-.stProgress>div>div>div>div{{
-    background:linear-gradient(90deg,var(--accent),#00b894)!important;
-    border-radius:4px!important;
-}}
-.stProgress>div>div{{background:var(--surface2)!important;border-radius:4px!important;}}
+.stProgress > div > div > div > div {
+    background: linear-gradient(90deg, var(--accent), #00b894) !important;
+    border-radius: 4px !important;
+}
+.stProgress > div > div {
+    background: var(--surface2) !important;
+    border-radius: 4px !important;
+}
 
 /* ── Tabs ──────────────────────────────────── */
-.stTabs [data-baseweb="tab-list"]{{
-    background:var(--surface)!important;border-radius:8px!important;
-    gap:4px!important;padding:4px!important;border:1px solid var(--border)!important;
-}}
-.stTabs [data-baseweb="tab"]{{
-    color:var(--text2)!important;background:transparent!important;
-    border-radius:6px!important;font-size:13px!important;
-}}
-.stTabs [aria-selected="true"]{{
-    background:rgba(0,212,170,0.15)!important;color:var(--accent)!important;
-    font-weight:600!important;
-}}
+.stTabs [data-baseweb="tab-list"] {
+    background: var(--surface) !important;
+    border-radius: 8px !important;
+    gap: 4px !important;
+    padding: 4px !important;
+    border: 1px solid var(--border) !important;
+}
+.stTabs [data-baseweb="tab"] {
+    color: var(--text2) !important;
+    background: transparent !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+}
+.stTabs [aria-selected="true"] {
+    background: rgba(0,212,170,0.15) !important;
+    color: var(--accent) !important;
+    font-weight: 600 !important;
+}
 
 /* ── Divider ───────────────────────────────── */
-hr{{border-color:var(--border)!important;margin:16px 0!important;}}
+hr { border-color: var(--border) !important; margin: 16px 0 !important; }
 
 /* ── Checkbox / Radio ──────────────────────── */
-.stCheckbox label span,.stRadio label span{{color:var(--text)!important;}}
-.stRadio [data-testid="stMarkdownContainer"]{{color:var(--text2)!important;}}
+.stCheckbox label span, .stRadio label span { color: var(--text) !important; }
+.stRadio [data-testid="stMarkdownContainer"] { color: var(--text2) !important; }
 
 /* ── Date input ────────────────────────────── */
-[data-testid="stDateInput"] input{{
-    background:var(--surface2)!important;color:var(--text)!important;
-    border:1px solid var(--border)!important;
-}}
+[data-testid="stDateInput"] input {
+    background: var(--surface2) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+}
 
 /* ── Download button ───────────────────────── */
-.stDownloadButton>button{{
-    background:var(--surface2)!important;color:var(--accent)!important;
-    border:1px solid var(--accent)!important;border-radius:6px!important;
-    font-weight:600!important;
-}}
-.stDownloadButton>button:hover{{background:rgba(0,212,170,0.1)!important;}}
+.stDownloadButton > button {
+    background: var(--surface2) !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent) !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+}
+.stDownloadButton > button:hover { background: rgba(0,212,170,0.1) !important; }
 
 /* ── Form container ────────────────────────── */
-[data-testid="stForm"]{{
-    background:var(--surface)!important;border:1px solid var(--border)!important;
-    border-radius:10px!important;padding:16px!important;
-}}
+[data-testid="stForm"] {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    padding: 16px !important;
+}
 
 /* ── Scrollbar ─────────────────────────────── */
-::-webkit-scrollbar{{width:6px;height:6px;}}
-::-webkit-scrollbar-track{{background:var(--bg);}}
-::-webkit-scrollbar-thumb{{background:var(--border);border-radius:3px;}}
-::-webkit-scrollbar-thumb:hover{{background:var(--text2);}}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text2); }
 
 /* ── Custom component classes ──────────────── */
-.sigma-card{{
-    background:var(--surface);border:1px solid var(--border);
-    border-radius:12px;padding:16px 20px;margin-bottom:12px;
-}}
-.sigma-card-critical{{border-left:4px solid var(--danger)!important;}}
-.sigma-card-warning{{border-left:4px solid var(--warning)!important;}}
-.sigma-card-success{{border-left:4px solid var(--success)!important;}}
-.sigma-card-info{{border-left:4px solid #3b82f6!important;}}
+.sigma-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+}
+.sigma-card-critical { border-left: 4px solid var(--danger)  !important; }
+.sigma-card-warning  { border-left: 4px solid var(--warning) !important; }
+.sigma-card-success  { border-left: 4px solid var(--success) !important; }
+.sigma-card-info     { border-left: 4px solid #3b82f6 !important; }
 
-.kpi-card{{
-    background:var(--surface);border:1px solid var(--border);
-    border-top:3px solid var(--accent);border-radius:10px;padding:18px 20px 14px;
-}}
-.kpi-card-danger{{border-top-color:var(--danger)!important;}}
-.kpi-card-warning{{border-top-color:var(--warning)!important;}}
-.kpi-card-success{{border-top-color:var(--success)!important;}}
+.kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 18px 20px 14px;
+}
+.kpi-card-danger  { border-top-color: var(--danger)  !important; }
+.kpi-card-warning { border-top-color: var(--warning) !important; }
+.kpi-card-success { border-top-color: var(--success) !important; }
 
-.badge{{
-    display:inline-block;padding:2px 10px;border-radius:12px;
-    font-size:11px;font-weight:600;
-}}
-.badge-critical{{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);}}
-.badge-warning{{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);}}
-.badge-success{{background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.3);}}
-.badge-info{{background:rgba(59,130,246,0.15);color:#3b82f6;border:1px solid rgba(59,130,246,0.3);}}
-.badge-accent{{background:rgba(0,212,170,0.15);color:#00d4aa;border:1px solid rgba(0,212,170,0.3);}}
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.badge-critical { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+.badge-warning  { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+.badge-success  { background: rgba(34,197,94,0.15);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.badge-info     { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
+.badge-accent   { background: rgba(0,212,170,0.15);  color: #00d4aa; border: 1px solid rgba(0,212,170,0.3); }
 
-.module-header{{
-    font-family:'Syne',sans-serif;font-size:26px;font-weight:700;
-    color:var(--text);margin-bottom:2px;
-}}
-.module-subtitle{{font-size:13px;color:var(--text2);margin-bottom:16px;}}
-.problem-box{{
-    background:rgba(245,158,11,0.08);border-left:3px solid var(--warning);
-    padding:10px 14px;border-radius:6px;color:#f59e0b;font-size:13px;margin-bottom:20px;
-}}
-
-/* ── Theme toggle in sidebar ───────────────── */
-.theme-toggle .stRadio{{padding:0!important;}}
-.theme-toggle .stRadio>label{{display:none!important;}}
-.theme-toggle .stRadio [role="radiogroup"]{{
-    gap:4px!important;justify-content:center;
-}}
-.theme-toggle .stRadio label{{
-    background:var(--surface2)!important;border:1px solid var(--border)!important;
-    border-radius:6px!important;padding:4px 8px!important;
-    font-size:11px!important;color:var(--text2)!important;cursor:pointer;
-}}
-.theme-toggle .stRadio label[data-baseweb="radio"]>div:first-child{{display:none!important;}}
+.module-header {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+.module-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 16px; }
+.problem-box {
+    background: rgba(245,158,11,0.08);
+    border-left: 3px solid var(--warning);
+    padding: 10px 14px;
+    border-radius: 6px;
+    color: #f59e0b;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
 </style>""", unsafe_allow_html=True)
 
 # ── Top Header Bar ────────────────────────────────────────────────────────────
@@ -320,19 +343,20 @@ except Exception:
     alert_count = 0
 
 st.markdown(
-    f"""<div style="background:var(--sidebar,#0d1117);border-bottom:1px solid var(--border,#30363d);
+    f"""<div style="background:var(--sidebar);border-bottom:1px solid var(--border);
     padding:10px 24px;display:flex;align-items:center;justify-content:space-between;
     margin:-8px -24px 16px -24px;">
     <div style="display:flex;align-items:center;gap:12px">
         <span style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
         color:#00d4aa;letter-spacing:-0.5px">⚙ SigmaOps ERP</span>
-        <span style="background:rgba(0,212,170,0.1);color:#00d4aa;border:1px solid rgba(0,212,170,0.3);
+        <span style="background:rgba(0,212,170,0.1);color:#00d4aa;
+        border:1px solid rgba(0,212,170,0.3);
         padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">SIX SIGMA</span>
     </div>
     <div style="display:flex;align-items:center;gap:16px">
         {"<span style='background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600'>🚨 " + str(alert_count) + " Critical</span>" if alert_count > 0 else ""}
-        <span style="color:var(--text2,#8b949e);font-size:12px">{now.strftime('%a, %d %b %Y')}</span>
-        <span style="color:var(--text2,#8b949e);font-size:12px">{now.strftime('%H:%M')} GST</span>
+        <span style="color:var(--text2);font-size:12px">{now.strftime('%a, %d %b %Y')}</span>
+        <span style="color:var(--text2);font-size:12px">{now.strftime('%H:%M')} GST</span>
         <span style="background:#22c55e;color:#000;padding:3px 10px;border-radius:12px;
         font-size:11px;font-weight:700">● LIVE</span>
     </div>
@@ -341,13 +365,21 @@ st.markdown(
 )
 
 # ── Sidebar Navigation ────────────────────────────────────────────────────────
+
+# Theme radio on_change — fires BEFORE the rerun, so inject_css() at the top
+# of the next render cycle already sees the updated st.session_state["theme"].
+def _on_theme_change():
+    label = st.session_state.get("_theme_radio", "🌙 Dark")
+    st.session_state["theme"] = LABEL_TO_KEY.get(label, "dark")
+
+
 with st.sidebar:
     st.markdown(
         "<div style='padding:16px 12px 8px'>"
-        "<div style='font-family:Syne,sans-serif;font-size:18px;font-weight:800;color:#00d4aa'>"
-        "⚙ SigmaOps</div>"
-        "<div style='font-size:10px;color:var(--text2,#8b949e);margin-top:2px;letter-spacing:0.5px'>"
-        "WAREHOUSE INTELLIGENCE</div>"
+        "<div style='font-family:Syne,sans-serif;font-size:18px;font-weight:800;"
+        "color:#00d4aa'>⚙ SigmaOps</div>"
+        "<div style='font-size:10px;color:var(--text2);margin-top:2px;"
+        "letter-spacing:0.5px'>WAREHOUSE INTELLIGENCE</div>"
         "</div>",
         unsafe_allow_html=True,
     )
@@ -378,7 +410,7 @@ with st.sidebar:
             "archive",
             "gear-wide-connected",
             "bar-chart-line-fill",
-            "cpu",              # "robot" is Bootstrap Icons ≥1.9 — "cpu" is universally safe
+            "cpu",          # "robot" requires Bootstrap Icons ≥1.9; "cpu" is universal
         ],
         default_index=0,
         styles={
@@ -403,28 +435,31 @@ with st.sidebar:
         },
     )
 
-    # ── Theme Toggle ─────────────────────────────────────────────────────────
+    # ── Theme Toggle ──────────────────────────────────────────────────────────
     st.markdown(
-        "<div style='margin:12px 8px 0;padding-top:12px;border-top:1px solid var(--border,#30363d)'>"
-        "<div style='font-size:10px;color:var(--text2,#8b949e);text-transform:uppercase;"
-        "letter-spacing:0.6px;margin-bottom:6px;text-align:center'>Theme</div>"
+        "<div style='margin:8px 8px 4px;padding-top:10px;"
+        "border-top:1px solid var(--border)'>"
+        "<div style='font-size:10px;color:var(--text2);text-transform:uppercase;"
+        "letter-spacing:0.6px;margin-bottom:4px;text-align:center'>Theme</div>"
         "</div>",
         unsafe_allow_html=True,
     )
+    _current_label = KEY_TO_LABEL.get(st.session_state.get("theme", "dark"), "🌙 Dark")
     st.radio(
         "Theme",
-        _THEME_OPTS,
-        index=_THEME_OPTS.index(st.session_state.get("theme_choice", "🌙 Dark")),
+        THEME_OPTS,
+        index=THEME_OPTS.index(_current_label),
         horizontal=True,
         label_visibility="collapsed",
-        key="theme_choice",
+        key="_theme_radio",
+        on_change=_on_theme_change,
     )
 
     # ── Sidebar Footer ────────────────────────────────────────────────────────
     st.markdown(
-        "<div style='margin-top:12px;padding-top:12px;border-top:1px solid var(--border,#30363d);"
-        "text-align:center'>"
-        "<div style='font-size:10px;color:var(--text2,#8b949e);line-height:1.6'>"
+        "<div style='margin-top:8px;padding-top:10px;"
+        "border-top:1px solid var(--border);text-align:center'>"
+        "<div style='font-size:10px;color:var(--text2);line-height:1.6'>"
         "SigmaOps ERP v1.0<br>"
         "<span style='color:#00d4aa'>Built for Gulf Operations</span>"
         "</div></div>",
@@ -433,8 +468,8 @@ with st.sidebar:
 
 # ── Page Router ───────────────────────────────────────────────────────────────
 def _page_key(s):
-    """Strip alert badge from label for routing."""
     return s.split("  🔴")[0].split(" 🔴")[0].strip()
+
 
 page = _page_key(selected)
 

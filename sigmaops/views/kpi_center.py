@@ -11,6 +11,7 @@ from modules.db import (
     get_delay_by_carrier,
 )
 from modules.kpi import format_inr_crore
+from modules.theme import inject_css
 
 CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
                 font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
@@ -34,6 +35,7 @@ def kpi_trend_chart(snap_df, field, color, target, target_label, height=200):
 
 
 def render():
+    inject_css()
     st.markdown(
         "<div class='module-header'>📈 KPI Command Center</div>"
         "<div class='module-subtitle'>"
