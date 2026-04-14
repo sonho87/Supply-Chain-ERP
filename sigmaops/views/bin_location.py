@@ -9,12 +9,7 @@ from modules.db import (
     update_bin_mapping, update_bin_audited, insert_bin,
     get_fix_checklists, update_fix_item,
 )
-from modules.theme import inject_css
-
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
-                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
-                xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
-                yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
+from modules.theme import inject_css, get_chart_theme
 
 
 def render():
@@ -42,9 +37,9 @@ def render():
                     st.markdown(
                         f"<div class='sigma-card'>"
                         f"<div style='font-size:28px;font-weight:700;color:#00d4aa'>Zone {zone}</div>"
-                        f"<div style='font-size:13px;color:#8b949e'>{total} bins total</div>"
+                        f"<div style='font-size:13px;color:var(--text2)'>{total} bins total</div>"
                         f"<div style='color:#ef4444;font-size:13px'>⚠️ {mismatch} mismatches</div>"
-                        f"<div style='color:#8b949e;font-size:12px'>Empty: {empty}</div>"
+                        f"<div style='color:var(--text2);font-size:12px'>Empty: {empty}</div>"
                         f"</div>",
                         unsafe_allow_html=True
                     )
@@ -86,7 +81,7 @@ def render():
                 showlegend=False
             ))
         fig.update_layout(
-            **CHART_BG, height=300,
+            **get_chart_theme(), height=300,
             title=f"Zone {zone_sel} Bin Layout",
             xaxis_title="Aisle", yaxis_title="Rack/Level",
         )
@@ -155,7 +150,7 @@ def render():
                 st.markdown(
                     f"<div class='sigma-card'>"
                     f"<div style='font-size:18px;font-weight:700;color:#00d4aa'>{cls}-Class</div>"
-                    f"<div style='font-size:12px;color:#8b949e'>Required: {freq_label}</div>"
+                    f"<div style='font-size:12px;color:var(--text2)'>Required: {freq_label}</div>"
                     f"<div style='font-size:13px'>{total} bins | {audited} audited</div>"
                     f"</div>",
                     unsafe_allow_html=True

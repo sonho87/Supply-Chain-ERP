@@ -9,17 +9,12 @@ from modules.db import (
     insert_grn_entry, update_grn_verification, update_grn_status,
     get_grn_error_trend, get_fix_checklists, update_fix_item,
 )
-from modules.theme import inject_css
+from modules.theme import inject_css, get_chart_theme
 
 VENDORS = [
     "Reliance Retail", "Tata CLiQ", "Metro Cash and Carry",
     "Walmart India", "D-Mart", "Big Bazaar Wholesale"
 ]
-
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
-                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
-                xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
-                yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
 
 
 def render():
@@ -42,10 +37,10 @@ def render():
     s3.metric("Flagged", stats["flagged"])
     color = "red" if error_rate > 2 else "green"
     s4.markdown(
-        f"<div style='background:#161b22;border:1px solid #30363d;border-left:3px solid "
+        f"<div style='background:var(--surface);border:1px solid var(--border);border-left:3px solid "
         f"{'#ef4444' if error_rate > 2 else '#22c55e'};"
         f"border-radius:8px;padding:16px'>"
-        f"<div style='color:#8b949e;font-size:13px'>Error Rate %</div>"
+        f"<div style='color:var(--text2);font-size:13px'>Error Rate %</div>"
         f"<div style='font-size:28px;font-weight:700;color:{'#ef4444' if error_rate > 2 else '#22c55e'}'>"
         f"{error_rate}%</div></div>",
         unsafe_allow_html=True
@@ -164,7 +159,7 @@ def render():
                                   marker_color="#ef4444", name="Error %"))
             fig.add_hline(y=2.0, line_dash="dash", line_color="#22c55e",
                           annotation_text="Target 2%", annotation_font_color="#22c55e")
-            fig.update_layout(**CHART_BG, height=250, title="GRN Error Rate (14 Days)")
+            fig.update_layout(**get_chart_theme(), height=250, title="GRN Error Rate (14 Days)")
             st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     with chart2:
@@ -180,7 +175,7 @@ def render():
                     hole=0.4,
                     marker_colors=["#f59e0b", "#ef4444", "#7c3aed"]
                 ))
-                fig2.update_layout(**CHART_BG, height=250, title="Error Type Breakdown",
+                fig2.update_layout(**get_chart_theme(), height=250, title="Error Type Breakdown",
                                    showlegend=True)
                 st.plotly_chart(fig2, width='stretch', config={"displayModeBar": False})
 

@@ -11,12 +11,7 @@ from modules.db import (
     get_delay_by_carrier,
 )
 from modules.kpi import format_inr_crore
-from modules.theme import inject_css
-
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
-                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
-                xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
-                yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
+from modules.theme import inject_css, get_chart_theme
 
 
 def kpi_trend_chart(snap_df, field, color, target, target_label, height=200):
@@ -30,7 +25,7 @@ def kpi_trend_chart(snap_df, field, color, target, target_label, height=200):
         ))
         fig.add_hline(y=target, line_dash="dash", line_color="#22c55e",
                       annotation_text=target_label, annotation_font_color="#22c55e")
-    fig.update_layout(**CHART_BG, height=height, showlegend=False)
+    fig.update_layout(**get_chart_theme(), height=height, showlegend=False)
     return fig
 
 
@@ -63,16 +58,16 @@ def render():
         val = latest.get("picking_accuracy_pct", 0) if latest else 0
         color = "#22c55e" if val >= 99.5 else ("#f59e0b" if val >= 97 else "#ef4444")
         k1c1.markdown(
-            f"<div style='border-left:3px solid {color};padding:12px;background:#161b22;border-radius:8px'>"
-            f"<div style='color:#8b949e;font-size:12px'>Current Value</div>"
+            f"<div style='border-left:3px solid {color};padding:12px;background:var(--surface);border-radius:8px'>"
+            f"<div style='color:var(--text2);font-size:12px'>Current Value</div>"
             f"<div style='font-size:32px;font-weight:700;color:{color}'>{val:.1f}%</div></div>",
             unsafe_allow_html=True
         )
         k1c2.metric("vs Target", f"{val - 99.5:+.2f}pp", "Target: ≥ 99.5%")
         trend_dir = "↑ Improving" if not snap_df.empty and snap_df["picking_accuracy_pct"].iloc[-1] > snap_df["picking_accuracy_pct"].iloc[0] else "↓ Declining"
         k1c3.markdown(
-            f"<div style='border-left:3px solid #3b82f6;padding:12px;background:#161b22;border-radius:8px'>"
-            f"<div style='color:#8b949e;font-size:12px'>Formula</div>"
+            f"<div style='border-left:3px solid #3b82f6;padding:12px;background:var(--surface);border-radius:8px'>"
+            f"<div style='color:var(--text2);font-size:12px'>Formula</div>"
             f"<div style='color:#3b82f6;font-size:12px'>Correct Picks / Total Picks × 100</div>"
             f"<div style='font-size:16px;margin-top:8px'>{trend_dir}</div></div>",
             unsafe_allow_html=True
@@ -90,15 +85,15 @@ def render():
         val2 = latest.get("inventory_accuracy_pct", 0) if latest else 0
         color2 = "#22c55e" if val2 >= 98 else ("#f59e0b" if val2 >= 90 else "#ef4444")
         k2c1.markdown(
-            f"<div style='border-left:3px solid {color2};padding:12px;background:#161b22;border-radius:8px'>"
-            f"<div style='color:#8b949e;font-size:12px'>Current Value</div>"
+            f"<div style='border-left:3px solid {color2};padding:12px;background:var(--surface);border-radius:8px'>"
+            f"<div style='color:var(--text2);font-size:12px'>Current Value</div>"
             f"<div style='font-size:32px;font-weight:700;color:{color2}'>{val2:.1f}%</div></div>",
             unsafe_allow_html=True
         )
         k2c2.metric("vs Target", f"{val2 - 98.0:+.2f}pp", "Target: ≥ 98%")
         k2c3.markdown(
-            "<div style='border-left:3px solid #3b82f6;padding:12px;background:#161b22;border-radius:8px'>"
-            "<div style='color:#8b949e;font-size:12px'>Formula</div>"
+            "<div style='border-left:3px solid #3b82f6;padding:12px;background:var(--surface);border-radius:8px'>"
+            "<div style='color:var(--text2);font-size:12px'>Formula</div>"
             "<div style='color:#3b82f6;font-size:12px'>(Matched SKUs / Total SKUs) × 100</div></div>",
             unsafe_allow_html=True
         )
@@ -118,15 +113,15 @@ def render():
         val3 = latest.get("grn_error_pct", 0) if latest else 0
         color3 = "#22c55e" if val3 <= 2 else ("#f59e0b" if val3 <= 5 else "#ef4444")
         k3c1.markdown(
-            f"<div style='border-left:3px solid {color3};padding:12px;background:#161b22;border-radius:8px'>"
-            f"<div style='color:#8b949e;font-size:12px'>Current Value</div>"
+            f"<div style='border-left:3px solid {color3};padding:12px;background:var(--surface);border-radius:8px'>"
+            f"<div style='color:var(--text2);font-size:12px'>Current Value</div>"
             f"<div style='font-size:32px;font-weight:700;color:{color3}'>{val3:.1f}%</div></div>",
             unsafe_allow_html=True
         )
         k3c2.metric("vs Target", f"{val3 - 2.0:+.2f}pp", "Target: ≤ 2%")
         k3c3.markdown(
-            "<div style='border-left:3px solid #3b82f6;padding:12px;background:#161b22;border-radius:8px'>"
-            "<div style='color:#8b949e;font-size:12px'>Formula</div>"
+            "<div style='border-left:3px solid #3b82f6;padding:12px;background:var(--surface);border-radius:8px'>"
+            "<div style='color:var(--text2);font-size:12px'>Formula</div>"
             "<div style='color:#3b82f6;font-size:12px'>(Erroneous GRNs / Total GRNs) × 100</div></div>",
             unsafe_allow_html=True
         )
@@ -136,7 +131,7 @@ def render():
                                       marker_color="#ef4444", name="GRN Error %"))
             fig_grn.add_hline(y=2.0, line_dash="dash", line_color="#22c55e",
                                annotation_text="Target 2%")
-            fig_grn.update_layout(**CHART_BG, height=200)
+            fig_grn.update_layout(**get_chart_theme(), height=200)
             st.plotly_chart(fig_grn, width='stretch', config={"displayModeBar": False})
 
         st.markdown("**Drill-down: Error Rate by Vendor**")
@@ -153,15 +148,15 @@ def render():
         val4 = latest.get("dispatch_tat_hours", 0) if latest else 0
         color4 = "#22c55e" if val4 <= 24 else ("#f59e0b" if val4 <= 30 else "#ef4444")
         k4c1.markdown(
-            f"<div style='border-left:3px solid {color4};padding:12px;background:#161b22;border-radius:8px'>"
-            f"<div style='color:#8b949e;font-size:12px'>Current Value</div>"
+            f"<div style='border-left:3px solid {color4};padding:12px;background:var(--surface);border-radius:8px'>"
+            f"<div style='color:var(--text2);font-size:12px'>Current Value</div>"
             f"<div style='font-size:32px;font-weight:700;color:{color4}'>{val4:.1f} hrs</div></div>",
             unsafe_allow_html=True
         )
         k4c2.metric("vs Target", f"{val4 - 24.0:+.1f}h", "Target: ≤ 24 hrs")
         k4c3.markdown(
-            "<div style='border-left:3px solid #3b82f6;padding:12px;background:#161b22;border-radius:8px'>"
-            "<div style='color:#8b949e;font-size:12px'>Formula</div>"
+            "<div style='border-left:3px solid #3b82f6;padding:12px;background:var(--surface);border-radius:8px'>"
+            "<div style='color:var(--text2);font-size:12px'>Formula</div>"
             "<div style='color:#3b82f6;font-size:12px'>Avg(dispatched_at - order_release_time)</div></div>",
             unsafe_allow_html=True
         )
@@ -177,20 +172,20 @@ def render():
         k5c1, k5c2, k5c3 = st.columns(3)
         val5 = latest.get("dead_stock_value", 0) if latest else 0
         k5c1.markdown(
-            f"<div style='border-left:3px solid #ef4444;padding:12px;background:#161b22;border-radius:8px'>"
-            f"<div style='color:#8b949e;font-size:12px'>Current Value</div>"
+            f"<div style='border-left:3px solid #ef4444;padding:12px;background:var(--surface);border-radius:8px'>"
+            f"<div style='color:var(--text2);font-size:12px'>Current Value</div>"
             f"<div style='font-size:28px;font-weight:700;color:#ef4444'>{format_inr_crore(val5)}</div></div>",
             unsafe_allow_html=True
         )
         k5c2.markdown(
-            "<div style='padding:12px;background:#161b22;border-radius:8px'>"
-            "<div style='color:#8b949e;font-size:12px'>Target</div>"
+            "<div style='padding:12px;background:var(--surface);border-radius:8px'>"
+            "<div style='color:var(--text2);font-size:12px'>Target</div>"
             "<div style='color:#22c55e;font-size:14px'>Decreasing trend month-on-month</div></div>",
             unsafe_allow_html=True
         )
         k5c3.markdown(
-            "<div style='border-left:3px solid #3b82f6;padding:12px;background:#161b22;border-radius:8px'>"
-            "<div style='color:#8b949e;font-size:12px'>Formula</div>"
+            "<div style='border-left:3px solid #3b82f6;padding:12px;background:var(--surface);border-radius:8px'>"
+            "<div style='color:var(--text2);font-size:12px'>Formula</div>"
             "<div style='color:#3b82f6;font-size:12px'>SUM(qty × cost) for aging ≥ 60 days</div></div>",
             unsafe_allow_html=True
         )
@@ -201,7 +196,7 @@ def render():
                 mode="lines", line=dict(color="#ef4444", width=2.5),
                 fill="tozeroy", fillcolor="rgba(239,68,68,0.08)"
             ))
-            fig_ds.update_layout(**CHART_BG, height=200, yaxis_title="₹ Crore")
+            fig_ds.update_layout(**get_chart_theme(), height=200, yaxis_title="₹ Crore")
             st.plotly_chart(fig_ds, width='stretch', config={"displayModeBar": False})
 
     st.divider()
@@ -245,9 +240,9 @@ def render():
                     acol1, acol2 = st.columns([4, 1])
                     acol1.markdown(
                         f"<div style='border-left:3px solid {color};padding:8px;"
-                        f"background:#161b22;border-radius:4px;font-size:13px'>"
+                        f"background:var(--surface);border-radius:4px;font-size:13px'>"
                         f"<b>{row['title']}</b> "
-                        f"<span style='color:#8b949e'>— {row['module'].upper()}</span></div>",
+                        f"<span style='color:var(--text2)'>— {row['module'].upper()}</span></div>",
                         unsafe_allow_html=True
                     )
                     with acol2:

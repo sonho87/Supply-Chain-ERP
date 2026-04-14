@@ -14,7 +14,7 @@ from datetime import datetime
 
 from modules.db import init_db
 from modules import seed
-from modules.theme import inject_css, THEME_OPTS, LABEL_TO_KEY, KEY_TO_LABEL
+from modules.theme import inject_css, get_theme, THEME_OPTS, LABEL_TO_KEY, KEY_TO_LABEL
 
 # ── Page Config (MUST be first Streamlit call) ────────────────────────────────
 st.set_page_config(
@@ -386,6 +386,14 @@ with st.sidebar:
 
     alert_label = f"Dashboard  🔴{alert_count}" if alert_count > 0 else "Dashboard"
 
+    _is_light = get_theme() == "light"
+    _nav_text = "#374151" if _is_light else "#c9d1d9"
+    _icon_color = "#6b7280" if _is_light else "#8b949e"
+    _hover_bg = "rgba(0,102,204,0.07)" if _is_light else "rgba(0,212,170,0.08)"
+    _sel_bg = "rgba(0,102,204,0.10)" if _is_light else "rgba(0,212,170,0.12)"
+    _sel_color = "#0066cc" if _is_light else "#00d4aa"
+    _sel_border = "rgba(0,102,204,0.25)" if _is_light else "rgba(0,212,170,0.2)"
+
     selected = option_menu(
         menu_title=None,
         options=[
@@ -415,21 +423,21 @@ with st.sidebar:
         default_index=0,
         styles={
             "container": {"padding": "4px 8px", "background-color": "transparent"},
-            "icon": {"color": "#8b949e", "font-size": "14px"},
+            "icon": {"color": _icon_color, "font-size": "14px"},
             "nav-link": {
                 "font-size": "13px",
                 "font-family": "DM Sans, sans-serif",
-                "color": "#c9d1d9",
+                "color": _nav_text,
                 "padding": "8px 12px",
                 "border-radius": "6px",
                 "margin": "1px 0",
-                "--hover-color": "rgba(0,212,170,0.08)",
+                "--hover-color": _hover_bg,
             },
             "nav-link-selected": {
-                "background-color": "rgba(0,212,170,0.12)",
-                "color": "#00d4aa",
+                "background-color": _sel_bg,
+                "color": _sel_color,
                 "font-weight": "600",
-                "border": "1px solid rgba(0,212,170,0.2)",
+                "border": f"1px solid {_sel_border}",
             },
             "menu-title": {"display": "none"},
         },

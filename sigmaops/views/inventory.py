@@ -9,12 +9,7 @@ from modules.db import (
     get_root_cause_log, insert_root_cause, update_root_cause_status,
     get_fix_checklists, update_fix_item, insert_alert,
 )
-from modules.theme import inject_css
-
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
-                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
-                xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
-                yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
+from modules.theme import inject_css, get_chart_theme
 
 CATEGORIES = ["All", "Electronics", "FMCG", "Apparel", "Pharma", "Auto Parts"]
 
@@ -54,9 +49,10 @@ def render():
             },
             number={"font": {"color": color, "size": 36}, "suffix": "%"}
         ))
-        fig.update_layout(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
-                          font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=10, r=10, t=30, b=10),
-                          height=220)
+        ct = get_chart_theme()
+        fig.update_layout(paper_bgcolor=ct["paper_bgcolor"], plot_bgcolor=ct["plot_bgcolor"],
+                          font=dict(color=ct["font"]["color"], family="DM Sans, sans-serif"),
+                          margin=dict(l=10, r=10, t=30, b=10), height=220)
         st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     with g2:
@@ -68,7 +64,7 @@ def render():
                     unsafe_allow_html=True)
         st.markdown(f"<span style='color:#ef4444'>🔴 Critical Variance: {inv_stats['critical']}</span>",
                     unsafe_allow_html=True)
-        st.markdown(f"<span style='color:#8b949e'>⚪ Unresolved: {inv_stats['unresolved']}</span>",
+        st.markdown(f"<span style='color:var(--text2)'>⚪ Unresolved: {inv_stats['unresolved']}</span>",
                     unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -78,9 +74,9 @@ def render():
         overdue_df = get_overdue_cycle_counts()
         st.markdown(
             f"<div class='sigma-card'>"
-            f"<div style='font-size:13px;color:#8b949e'>Value at Risk</div>"
+            f"<div style='font-size:13px;color:var(--text2)'>Value at Risk</div>"
             f"<div style='font-size:22px;font-weight:700;color:#ef4444'>~₹{val_at_risk/1e5:.1f}L est.</div>"
-            f"<div style='margin-top:8px;font-size:13px;color:#8b949e'>Overdue Cycle Counts</div>"
+            f"<div style='margin-top:8px;font-size:13px;color:var(--text2)'>Overdue Cycle Counts</div>"
             f"<div style='font-size:22px;font-weight:700;color:#f59e0b'>{len(overdue_df)}</div>"
             f"</div>",
             unsafe_allow_html=True

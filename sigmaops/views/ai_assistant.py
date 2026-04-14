@@ -52,17 +52,17 @@ def render():
         if msg["role"] == "user":
             st.markdown(
                 f"<div style='display:flex;justify-content:flex-end;margin:8px 0'>"
-                f"<div style='background:#1e3a5f;border:1px solid #3b82f6;border-radius:12px 12px 2px 12px;"
+                f"<div style='background:var(--accent);color:#fff;border-radius:12px 12px 2px 12px;"
                 f"padding:10px 14px;max-width:70%;font-size:13px'>{msg['content']}</div></div>",
                 unsafe_allow_html=True
             )
         else:
             st.markdown(
                 f"<div style='display:flex;justify-content:flex-start;margin:8px 0'>"
-                f"<div style='background:#161b22;border:1px solid #30363d;border-radius:12px 12px 12px 2px;"
+                f"<div style='background:var(--surface);border:1px solid var(--border);border-radius:12px 12px 12px 2px;"
                 f"padding:12px 16px;max-width:80%;font-size:13px'>"
-                f"<span style='color:#00d4aa;font-size:11px;font-weight:600'>🤖 AI WAREHOUSE EXPERT</span>"
-                f"<div style='margin-top:8px'>{msg['content'].replace(chr(10), '<br>')}</div>"
+                f"<span style='color:var(--accent);font-size:11px;font-weight:600'>🤖 AI WAREHOUSE EXPERT</span>"
+                f"<div style='margin-top:8px;color:var(--text)'>{msg['content'].replace(chr(10), '<br>')}</div>"
                 f"</div></div>",
                 unsafe_allow_html=True
             )

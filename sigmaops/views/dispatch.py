@@ -8,12 +8,7 @@ from modules.db import (
     update_dispatch_status, get_delay_by_carrier,
     get_fix_checklists, update_fix_item,
 )
-from modules.theme import inject_css
-
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
-                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
-                xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
-                yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
+from modules.theme import inject_css, get_chart_theme
 
 STATUS_ORDER = ["pending", "staged", "loading", "dispatched"]
 STATUS_NEXT = {"pending": "staged", "staged": "loading", "loading": "dispatched"}
@@ -66,10 +61,10 @@ def render():
                     docs_icon = "✅" if row["docs_ready"] else "❌"
                     staging_icon = "✅" if row["staging_done"] else "❌"
                     st.markdown(
-                        f"<div style='background:#161b22;border:1px solid {border};"
+                        f"<div style='background:var(--surface);border:1px solid {border};"
                         f"border-radius:6px;padding:8px;margin-bottom:6px;font-size:12px'>"
-                        f"<div style='font-weight:600'>{row['order_id']}</div>"
-                        f"<div style='color:#8b949e'>{row['carrier']} | {row['scheduled_slot']}</div>"
+                        f"<div style='font-weight:600;color:var(--text)'>{row['order_id']}</div>"
+                        f"<div style='color:var(--text2)'>{row['carrier']} | {row['scheduled_slot']}</div>"
                         f"<div>Docs {docs_icon} | Staged {staging_icon} {delay_badge}</div>"
                         f"</div>",
                         unsafe_allow_html=True
@@ -101,9 +96,9 @@ def render():
                         marker_color=status_color_map.get(status, "#8b949e")
                     ))
             fig.update_layout(
-                **CHART_BG, height=250, title="Orders by Time Slot",
+                **get_chart_theme(), height=250, title="Orders by Time Slot",
                 barmode="stack",
-                legend=dict(bgcolor="#21262d", bordercolor="#30363d"),
+                legend=dict(bgcolor=get_chart_theme()["xaxis"]["gridcolor"], bordercolor=get_chart_theme()["xaxis"]["gridcolor"]),
             )
             st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
@@ -157,7 +152,7 @@ def render():
                 x=delay_df["avg_delay"], y=delay_df["carrier"],
                 orientation="h", marker_color="#ef4444"
             ))
-            fig.update_layout(**CHART_BG, height=250, title="Avg Delay by Carrier (mins)")
+            fig.update_layout(**get_chart_theme(), height=250, title="Avg Delay by Carrier (mins)")
             st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     with da2:
@@ -178,9 +173,9 @@ def render():
             line=dict(color="#00d4aa", width=2), yaxis="y2", name="Cumulative %"
         ))
         fig2.update_layout(
-            **CHART_BG, height=250, title="Pareto: Dispatch Delay Reasons",
+            **get_chart_theme(), height=250, title="Pareto: Dispatch Delay Reasons",
             yaxis2=dict(overlaying="y", side="right", showgrid=False,
-                        tickfont=dict(color="#8b949e"), range=[0, 110]),
+                        tickfont=dict(color=get_chart_theme()["xaxis"]["tickfont"]["color"]), range=[0, 110]),
             showlegend=True,
             legend=dict(bgcolor="#21262d", bordercolor="#30363d"),
         )
@@ -199,7 +194,7 @@ def render():
         ))
         fig3.add_hline(y=24, line_dash="dash", line_color="#22c55e",
                        annotation_text="Target 24h")
-        fig3.update_layout(**CHART_BG, height=220)
+        fig3.update_layout(**get_chart_theme(), height=220)
         st.plotly_chart(fig3, width='stretch', config={"displayModeBar": False})
 
     st.divider()

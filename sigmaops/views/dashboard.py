@@ -12,37 +12,37 @@ from modules.kpi import (
     calc_grn_error_delta, calc_dispatch_tat_delta, calc_dead_stock_delta,
     format_inr_crore, get_module_fix_progress,
 )
-from modules.theme import inject_css
-
-_CL = dict(
-    paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
-    font=dict(color="#e6edf3", family="DM Sans, sans-serif", size=11),
-    margin=dict(l=0, r=0, t=0, b=0),
-    xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-    yaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-    showlegend=False,
-)
+from modules.theme import inject_css, get_chart_theme
 
 
 def _sparkline(values, color="#00d4aa", height=55):
+    ct = get_chart_theme()
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         y=values, mode="lines",
         line=dict(color=color, width=2),
         fill="tozeroy", fillcolor="rgba(0,212,170,0.07)"
     ))
-    fig.update_layout(**_CL, height=height)
+    fig.update_layout(
+        paper_bgcolor=ct["paper_bgcolor"],
+        plot_bgcolor=ct["plot_bgcolor"],
+        font=dict(color=ct["font"]["color"], family="DM Sans, sans-serif", size=11),
+        margin=dict(l=0, r=0, t=0, b=0),
+        xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+        yaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+        showlegend=False,
+        height=height,
+    )
     return fig
 
 
 def _chart_layout(**kwargs):
+    ct = get_chart_theme()
+    legend_bg = ct["xaxis"]["gridcolor"]
     base = dict(
-        paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
-        font=dict(color="#e6edf3", family="DM Sans, sans-serif"),
+        **ct,
         margin=dict(l=20, r=20, t=36, b=20),
-        xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
-        yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
-        legend=dict(bgcolor="#21262d", bordercolor="#30363d", borderwidth=1),
+        legend=dict(bgcolor=legend_bg, bordercolor=legend_bg, borderwidth=1),
     )
     base.update(kwargs)
     return base
@@ -53,8 +53,8 @@ def render():
     # ── Page title ────────────────────────────────────────────────────────────
     st.markdown(
         "<div style='font-family:Syne,sans-serif;font-size:24px;font-weight:700;"
-        "color:#e6edf3;margin-bottom:4px'>Warehouse Intelligence Dashboard</div>"
-        "<div style='font-size:13px;color:#8b949e;margin-bottom:20px'>"
+        "color:var(--text);margin-bottom:4px'>Warehouse Intelligence Dashboard</div>"
+        "<div style='font-size:13px;color:var(--text2);margin-bottom:20px'>"
         "Six Sigma operational metrics — real-time view</div>",
         unsafe_allow_html=True
     )
@@ -95,14 +95,14 @@ def render():
                 delta_color = "#ef4444" if delta > 0 else ("#22c55e" if delta < 0 else "#8b949e")
             st.markdown(
                 f"<div class='kpi-card kpi-card-{sev}'>"
-                f"<div style='font-size:11px;color:#8b949e;text-transform:uppercase;"
+                f"<div style='font-size:11px;color:var(--text2);text-transform:uppercase;"
                 f"letter-spacing:0.6px;margin-bottom:6px'>{label}</div>"
                 f"<div style='font-family:Syne,sans-serif;font-size:26px;font-weight:700;"
                 f"color:{color};line-height:1'>{val}</div>"
                 f"<div style='margin-top:6px;display:flex;align-items:center;gap:6px'>"
                 f"<span style='color:{delta_color};font-size:12px;font-weight:600'>"
                 f"{arrow} {abs(delta):.2f}</span>"
-                f"<span style='color:#8b949e;font-size:11px'>{note}</span>"
+                f"<span style='color:var(--text2);font-size:11px'>{note}</span>"
                 f"</div></div>",
                 unsafe_allow_html=True
             )
@@ -120,7 +120,7 @@ def render():
     # ── DMAIC Phase Summary ────────────────────────────────────────────────────
     st.markdown(
         "<div style='font-family:Syne,sans-serif;font-size:16px;font-weight:600;"
-        "color:#e6edf3;margin-bottom:12px'>DMAIC Phase Progress</div>",
+        "color:var(--text);margin-bottom:12px'>DMAIC Phase Progress</div>",
         unsafe_allow_html=True
     )
     from modules.db import get_all_dmaic_projects
@@ -141,13 +141,13 @@ def render():
             pct = int(past / max(1, len(dmaic_df)) * 100)
             c = phase_colors[phase]
             st.markdown(
-                f"<div style='background:#161b22;border:1px solid #30363d;border-top:3px solid {c};"
+                f"<div style='background:var(--surface);border:1px solid var(--border);border-top:3px solid {c};"
                 f"border-radius:8px;padding:12px;text-align:center'>"
                 f"<div style='font-family:Syne,sans-serif;font-size:22px;font-weight:800;color:{c}'>"
                 f"{phase[0].upper()}</div>"
-                f"<div style='font-size:10px;color:#8b949e;text-transform:uppercase;margin:2px 0'>"
+                f"<div style='font-size:10px;color:var(--text2);text-transform:uppercase;margin:2px 0'>"
                 f"{phase}</div>"
-                f"<div style='font-size:12px;color:#e6edf3'>{count} project{'s' if count!=1 else ''}</div>"
+                f"<div style='font-size:12px;color:var(--text)'>{count} project{'s' if count!=1 else ''}</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
@@ -158,7 +158,7 @@ def render():
     # ── 6 Module Status Cards ──────────────────────────────────────────────────
     st.markdown(
         "<div style='font-family:Syne,sans-serif;font-size:16px;font-weight:600;"
-        "color:#e6edf3;margin-bottom:12px'>Module Health Status</div>",
+        "color:var(--text);margin-bottom:12px'>Module Health Status</div>",
         unsafe_allow_html=True
     )
     modules = [
@@ -192,17 +192,17 @@ def render():
                 badge_col = "#ef4444" if crit > 0 else "#22c55e"
                 badge_txt = f"🔴 {crit} Critical" if crit > 0 else "🟢 Clean"
                 st.markdown(
-                    f"<div style='background:#161b22;border:1px solid #30363d;"
+                    f"<div style='background:var(--surface);border:1px solid var(--border);"
                     f"border-left:3px solid {border};border-radius:10px;padding:14px 16px;"
                     f"margin-bottom:4px'>"
-                    f"<div style='font-weight:600;font-size:14px;margin-bottom:6px'>{mod_label}</div>"
+                    f"<div style='font-weight:600;font-size:14px;color:var(--text);margin-bottom:6px'>{mod_label}</div>"
                     f"<div style='margin-bottom:6px'>"
                     f"<span style='background:{badge_bg};color:{badge_col};"
                     f"padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600'>"
                     f"{badge_txt}</span></div>"
-                    f"<div style='color:#8b949e;font-size:12px;margin-bottom:8px'>"
+                    f"<div style='color:var(--text2);font-size:12px;margin-bottom:8px'>"
                     f"{top_alert[:58]}{'…' if len(top_alert)>58 else ''}</div>"
-                    f"<div style='font-size:11px;color:#8b949e'>"
+                    f"<div style='font-size:11px;color:var(--text2)'>"
                     f"{fix['done']}/{fix['total']} fixes</div>"
                     f"</div>",
                     unsafe_allow_html=True
@@ -217,7 +217,7 @@ def render():
     with col_feed:
         st.markdown(
             "<div style='font-family:Syne,sans-serif;font-size:16px;font-weight:600;"
-            "color:#e6edf3;margin-bottom:12px'>Recent Activity</div>",
+            "color:var(--text);margin-bottom:12px'>Recent Activity</div>",
             unsafe_allow_html=True
         )
         activity = get_alerts(limit=18)
@@ -226,14 +226,14 @@ def render():
             for _, row in activity.iterrows():
                 dc = dot.get(row["severity"], "#8b949e")
                 st.markdown(
-                    f"<div style='padding:6px 0;border-bottom:1px solid #21262d;"
+                    f"<div style='padding:6px 0;border-bottom:1px solid var(--border);"
                     f"display:flex;align-items:center;gap:8px'>"
                     f"<span style='color:{dc};font-size:9px'>●</span>"
-                    f"<span style='background:#21262d;color:#8b949e;padding:1px 6px;"
+                    f"<span style='background:var(--surface2);color:var(--text2);padding:1px 6px;"
                     f"border-radius:4px;font-size:10px;flex-shrink:0'>"
                     f"{str(row['module']).upper()}</span>"
-                    f"<span style='font-size:12px;color:#c9d1d9;flex:1'>{row['title']}</span>"
-                    f"<span style='color:#8b949e;font-size:10px;flex-shrink:0'>"
+                    f"<span style='font-size:12px;color:var(--text);flex:1'>{row['title']}</span>"
+                    f"<span style='color:var(--text2);font-size:10px;flex-shrink:0'>"
                     f"{str(row['created_at'])[:16]}</span>"
                     f"</div>",
                     unsafe_allow_html=True
@@ -242,7 +242,7 @@ def render():
     with col_alerts:
         st.markdown(
             "<div style='font-family:Syne,sans-serif;font-size:16px;font-weight:600;"
-            "color:#ef4444;margin-bottom:12px'>🚨 Unresolved Critical Alerts</div>",
+            "color:var(--danger);margin-bottom:12px'>🚨 Unresolved Critical Alerts</div>",
             unsafe_allow_html=True
         )
         from modules.db import get_alerts as _get_crit
@@ -257,7 +257,7 @@ def render():
                     f"margin-bottom:8px'>"
                     f"<div style='font-weight:600;font-size:12px;color:#ef4444;margin-bottom:3px'>"
                     f"{row['title']}</div>"
-                    f"<div style='color:#8b949e;font-size:11px'>{row['description'][:80]}…</div>"
+                    f"<div style='color:var(--text2);font-size:11px'>{row['description'][:80]}…</div>"
                     f"</div>",
                     unsafe_allow_html=True
                 )

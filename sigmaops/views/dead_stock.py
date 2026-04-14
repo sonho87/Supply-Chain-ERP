@@ -10,12 +10,7 @@ from modules.db import (
     get_fix_checklists, update_fix_item,
 )
 from modules.kpi import format_inr_crore
-from modules.theme import inject_css
-
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
-                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
-                xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
-                yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
+from modules.theme import inject_css, get_chart_theme
 
 AGING_COLORS = {
     "30_days": "#22c55e", "60_days": "#f59e0b",
@@ -42,9 +37,9 @@ def render():
 
     ov1, ov2, ov3, ov4 = st.columns(4)
     ov1.markdown(
-        f"<div style='background:#161b22;border:1px solid #30363d;border-left:3px solid #ef4444;"
+        f"<div style='background:var(--surface);border:1px solid var(--border);border-left:3px solid #ef4444;"
         f"border-radius:8px;padding:16px'>"
-        f"<div style='color:#8b949e;font-size:13px'>Total Dead Stock Value</div>"
+        f"<div style='color:var(--text2);font-size:13px'>Total Dead Stock Value</div>"
         f"<div style='font-size:24px;font-weight:700;color:#ef4444'>{format_inr_crore(total_val)}</div>"
         f"</div>",
         unsafe_allow_html=True
@@ -80,7 +75,7 @@ def render():
                 f"<div style='font-size:16px;font-weight:700;color:{color}'>{label}</div>"
                 f"<div style='font-size:13px'>{b_data['count']} SKUs</div>"
                 f"<div style='color:#ef4444;font-size:13px'>{format_inr_crore(b_data['value'])}</div>"
-                f"<div style='color:#8b949e;font-size:11px;margin-top:4px'>→ {action}</div>"
+                f"<div style='color:var(--text2);font-size:11px;margin-top:4px'>→ {action}</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
@@ -107,7 +102,7 @@ def render():
                     marker_color=AGING_COLORS[bucket]
                 ))
             fig.update_layout(
-                **CHART_BG, height=280, title="Dead Stock Value by Category (₹ Cr)",
+                **get_chart_theme(), height=280, title="Dead Stock Value by Category (₹ Cr)",
                 barmode="stack",
                 legend=dict(bgcolor="#21262d", bordercolor="#30363d"),
             )
@@ -123,7 +118,7 @@ def render():
                 line=dict(color="#ef4444", width=2.5),
                 fill="tozeroy", fillcolor="rgba(239,68,68,0.08)"
             ))
-            fig2.update_layout(**CHART_BG, height=280, title="Dead Stock Trend (₹Cr)")
+            fig2.update_layout(**get_chart_theme(), height=280, title="Dead Stock Trend (₹Cr)")
             st.plotly_chart(fig2, width='stretch', config={"displayModeBar": False})
 
     st.divider()
@@ -182,9 +177,9 @@ def render():
         f"<div class='sigma-card'>"
         f"<div style='font-size:15px;font-weight:600;color:#00d4aa;margin-bottom:8px'>Monthly Dead Stock Report</div>"
         f"<div style='display:flex;gap:40px'>"
-        f"<div><div style='color:#8b949e;font-size:12px'>Added This Month</div>"
+        f"<div><div style='color:var(--text2);font-size:12px'>Added This Month</div>"
         f"<div style='font-size:18px;color:#ef4444'>{added_count} SKUs | {format_inr_crore(added_val)}</div></div>"
-        f"<div><div style='color:#8b949e;font-size:12px'>Next Review Date</div>"
+        f"<div><div style='color:var(--text2);font-size:12px'>Next Review Date</div>"
         f"<div style='font-size:18px;color:#22c55e'>{next_review}</div></div>"
         f"</div></div>",
         unsafe_allow_html=True

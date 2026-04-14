@@ -7,7 +7,7 @@ from modules.db import (
     get_all_dmaic_projects, get_dmaic_project,
     update_dmaic_phase, insert_dmaic_project,
 )
-from modules.theme import inject_css
+from modules.theme import inject_css, get_chart_theme
 
 PHASE_ORDER = ["define", "measure", "analyze", "improve", "control"]
 PHASE_COLORS = {
@@ -62,7 +62,7 @@ def render():
             st.markdown(f"### {project['project_name']}")
             badge_cols = st.columns(4)
             badge_cols[0].markdown(
-                f"<span style='background:#21262d;color:#00d4aa;padding:4px 10px;"
+                f"<span style='background:var(--surface2);color:#00d4aa;padding:4px 10px;"
                 f"border-radius:6px'>{project['module'].upper()}</span>",
                 unsafe_allow_html=True
             )
@@ -73,7 +73,7 @@ def render():
                 unsafe_allow_html=True
             )
             badge_cols[2].markdown(
-                f"<span style='color:#8b949e;font-size:13px'>Owner: {project.get('owner', 'N/A')}</span>",
+                f"<span style='color:var(--text2);font-size:13px'>Owner: {project.get('owner', 'N/A')}</span>",
                 unsafe_allow_html=True
             )
             status_c = "#22c55e" if project["status"] == "active" else "#8b949e"
@@ -97,11 +97,11 @@ def render():
                     icon = "✅" if complete else ("🔄" if is_current else "🔒")
                     color = PHASE_COLORS[phase]
                     st.markdown(
-                        f"<div style='text-align:center;border:1px solid {'#30363d' if not is_current else color};"
-                        f"border-radius:8px;padding:12px;background:{'rgba(0,212,170,0.05)' if is_current else '#161b22'}'>"
+                        f"<div style='text-align:center;border:1px solid {'var(--border)' if not is_current else color};"
+                        f"border-radius:8px;padding:12px;background:{'rgba(0,212,170,0.05)' if is_current else 'var(--surface)'}'>"
                         f"<div style='font-size:18px'>{icon}</div>"
                         f"<div style='color:{color};font-weight:600;font-size:14px'>{phase[0].upper()}</div>"
-                        f"<div style='color:#8b949e;font-size:11px'>{phase.capitalize()}</div>"
+                        f"<div style='color:var(--text2);font-size:11px'>{phase.capitalize()}</div>"
                         f"</div>",
                         unsafe_allow_html=True
                     )
@@ -214,15 +214,15 @@ def render():
                 textposition="inside",
                 hovertext=f"Module: {row['module']}<br>Owner: {row['owner']}<br>Status: {row['status']}"
             ))
+        _ct = get_chart_theme()
         fig.update_layout(
-            **{**{
-                "paper_bgcolor": "#161b22", "plot_bgcolor": "#0d1117",
-                "font": dict(color="#e6edf3"), "margin": dict(l=20, r=20, t=30, b=20),
-            }},
+            **_ct,
             height=max(200, len(df) * 50 + 80),
             xaxis=dict(range=[0, 100], title="% Complete",
-                        gridcolor="#21262d", tickfont=dict(color="#8b949e")),
-            yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
+                        gridcolor=_ct["xaxis"]["gridcolor"],
+                        tickfont=dict(color=_ct["xaxis"]["tickfont"]["color"])),
+            yaxis=dict(gridcolor=_ct["yaxis"]["gridcolor"],
+                       tickfont=dict(color=_ct["yaxis"]["tickfont"]["color"])),
             title="DMAIC Projects — Completion Progress"
         )
         st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})

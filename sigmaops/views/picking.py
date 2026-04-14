@@ -8,12 +8,7 @@ from modules.db import (
     update_picking_status, get_picker_performance,
     get_picking_error_by_sku, get_fix_checklists, update_fix_item,
 )
-from modules.theme import inject_css
-
-CHART_BG = dict(paper_bgcolor="#161b22", plot_bgcolor="#0d1117",
-                font=dict(color="#e6edf3", family="DM Sans, sans-serif"), margin=dict(l=20, r=20, t=30, b=20),
-                xaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")),
-                yaxis=dict(gridcolor="#21262d", tickfont=dict(color="#8b949e")))
+from modules.theme import inject_css, get_chart_theme
 
 
 def render():
@@ -30,8 +25,8 @@ def render():
     sc = st.columns(5)
     acc_color = "#22c55e" if stats["accuracy"] >= 99.5 else ("#f59e0b" if stats["accuracy"] >= 97 else "#ef4444")
     sc[0].markdown(
-        f"<div style='background:#161b22;border:1px solid #30363d;border-left:3px solid {acc_color};"
-        f"border-radius:8px;padding:16px'><div style='color:#8b949e;font-size:13px'>Accuracy % Today</div>"
+        f"<div style='background:var(--surface);border:1px solid var(--border);border-left:3px solid {acc_color};"
+        f"border-radius:8px;padding:16px'><div style='color:var(--text2);font-size:13px'>Accuracy % Today</div>"
         f"<div style='font-size:28px;font-weight:700;color:{acc_color}'>{stats['accuracy']}%</div></div>",
         unsafe_allow_html=True
     )
@@ -101,7 +96,7 @@ def render():
                             "border-radius:8px;padding:20px;text-align:center'>"
                             "<div style='font-size:40px'>✅</div>"
                             "<div style='color:#22c55e;font-size:18px;font-weight:700'>VERIFIED — Ready to Pack</div>"
-                            "<div style='color:#8b949e;font-size:13px;margin-top:8px'>"
+                            "<div style='color:var(--text2);font-size:13px;margin-top:8px'>"
                             "Barcode scan prevents 87% of picking errors</div>"
                             "</div>",
                             unsafe_allow_html=True
@@ -117,7 +112,7 @@ def render():
                             f"border-radius:8px;padding:20px;text-align:center'>"
                             f"<div style='font-size:40px'>❌</div>"
                             f"<div style='color:#ef4444;font-size:18px;font-weight:700'>MISMATCH DETECTED</div>"
-                            f"<div style='color:#e6edf3;font-size:13px;margin-top:8px'>{'<br>'.join(issues)}</div>"
+                            f"<div style='color:var(--text);font-size:13px;margin-top:8px'>{'<br>'.join(issues)}</div>"
                             f"</div>",
                             unsafe_allow_html=True
                         )
@@ -139,7 +134,7 @@ def render():
                 x=sku_err_df["error_count"], y=sku_err_df["sku"],
                 orientation="h", marker_color="#ef4444"
             ))
-            fig.update_layout(**CHART_BG, height=280, title="Top SKUs with Picking Errors")
+            fig.update_layout(**get_chart_theme(), height=280, title="Top SKUs with Picking Errors")
             st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
 
     with ch2:
@@ -152,7 +147,7 @@ def render():
                 hole=0.4,
                 marker_colors=["#ef4444", "#f59e0b", "#7c3aed"]
             ))
-            fig2.update_layout(**CHART_BG, height=280, title="Error Type Breakdown", showlegend=True)
+            fig2.update_layout(**get_chart_theme(), height=280, title="Error Type Breakdown", showlegend=True)
             st.plotly_chart(fig2, width='stretch', config={"displayModeBar": False})
 
     st.divider()
