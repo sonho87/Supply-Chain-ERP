@@ -1,1 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  
+  --color-bg: #F9FAFB;
+  --color-sidebar: #FFFFFF;
+  --color-accent: #0F172A;
+  --color-accent-light: #334155;
+  --color-border: #E2E8F0;
+  --color-text-main: #1E293B;
+  --color-text-muted: #64748B;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-text-main font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6, .number-val {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  .enterprise-widget {
+    @apply bg-white rounded-xl border border-border transition-all duration-200;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  .btn-primary {
+    @apply bg-accent text-white px-4 py-2 rounded border-none text-xs font-semibold cursor-pointer transition-colors hover:bg-accent-light;
+  }
+  
+  .warehouse-grid-bg {
+    background-image: 
+      linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+      linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+}
+
+@keyframes scan {
+  from { background-position: 0 0; }
+  to { background-position: 0 400px; }
+}
 
