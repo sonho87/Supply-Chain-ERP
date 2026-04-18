@@ -102,6 +102,37 @@ const SIDEBAR_ITEMS = [
 ];
 
 export default function App() {
+  const [chatInput, setChatInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [chatMessages, setChatMessages] = useState([
+    { role: 'assistant', content: 'Hello! I am monitoring the warehouse floor. What metrics would you like to analyze today?' }
+  ]);
+  const handleSendMessage = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!chatInput.trim() || isTyping) return;
+
+    // Add user message to UI
+    setChatMessages(prev => [...prev, { role: 'user', content: chatInput }]);
+    const currentInput = chatInput.toLowerCase();
+    setChatInput('');
+    setIsTyping(true);
+
+    // Simulate thinking delay for realism
+    setTimeout(() => {
+      let aiResponse = "I have analyzed the current floor data. All systems are operating within normal Six Sigma control limits.";
+
+      if (currentInput.includes('dead') || currentInput.includes('stock')) {
+        aiResponse = "🚨 **Analysis Complete:** I detected ₹2.83 Cr in dead stock. Specifically, SKU-ELEC-0021 has an aging profile > 90 days. I recommend initiating the Q3 liquidation plan to recover capital.";
+      } else if (currentInput.includes('grn') || currentInput.includes('inward')) {
+        aiResponse = "📊 **GRN Bottleneck Detected:** Error rates spiked to 7.2% today. Root cause points to manual entry errors at Dock 4. I recommend enforcing the 2-step barcode verification protocol.";
+      } else if (currentInput.includes('picking') || currentInput.includes('accuracy')) {
+        aiResponse = "✅ **Picking Operations:** Currently at 98.9% accuracy. We are nearing the Upper Control Limit. Ensure checkers are mandatory before final packing for similar SKUs.";
+      }
+
+      setChatMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
+      setIsTyping(false);
+    }, 1500);
+  };
   const [activeTab, setActiveTab] = useState('executive');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
@@ -2268,81 +2299,71 @@ export default function App() {
 
             {/* AI Assistant Module */}
             {activeTab === 'ai' && (
-              <div className="space-y-6 animate-in fade-in duration-500 flex flex-col h-[calc(100vh-140px)]">
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 border-b border-border pb-4 gap-4 flex-shrink-0">
-                  <div>
-                    <h2 className="text-2xl font-heading font-bold text-accent tracking-tight flex items-center gap-2">
-                       <Sparkles className="w-6 h-6 text-purple-600" />
-                       Gemini ERP Assistant
-                    </h2>
-                    <p className="text-sm text-text-muted mt-1">Ask questions, generate reports, and automate tasks using your ERP data.</p>
+            {/* Functional AI Assistant Module */}
+            {activeTab === 'ai' && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                <div className="h-[600px] flex flex-col bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+                  
+                  {/* Chat Header */}
+                  <div className="p-4 border-b border-border bg-slate-50 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center border border-purple-200">
+                        <Bot className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <h2 className="font-bold text-accent">SigmaOps Intelligence</h2>
+                        <div className="text-xs text-emerald-600 font-bold flex items-center gap-1">
+                          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div> Online
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex-1 bg-white rounded-xl border border-border shadow-sm flex flex-col overflow-hidden">
-                  <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50">
-                    <div className="flex items-start gap-4">
-                       <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 border border-purple-200">
-                          <Bot className="w-5 h-5 text-purple-600" />
-                       </div>
-                       <div className="bg-white p-4 rounded-xl shadow-sm border border-border rounded-tl-none max-w-[80%]">
-                          <p className="text-sm text-slate-700 leading-relaxed font-medium">
-                            Hello! I am your AI ERP Assistant powered by Gemini. <br/><br/>
-                            <span className="font-bold">I can help you with:</span>
-                          </p>
-                          <ul className="mt-2 space-y-1 text-sm text-slate-600 list-disc list-inside">
-                             <li>Tracking live stock across all integrated platforms.</li>
-                             <li>Analyzing picking efficiency and operations bottlenecks.</li>
-                             <li>Resolving inventory mismatch data anomalies.</li>
-                             <li>Generating SLA breach and DMAIC variance reports.</li>
-                          </ul>
-                          <p className="text-xs text-text-muted mt-4 p-2 bg-slate-50 border border-border rounded">
-                            Note: This assistant is strictly linked to your ERP data. It will not answer questions unrelated to inventory, auditing, executive summaries, or logistics.
-                          </p>
-                       </div>
-                    </div>
-
-                    <div className="flex items-start gap-4 flex-row-reverse">
-                       <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 border border-blue-200">
-                          <Users className="w-5 h-5 text-blue-600" />
-                       </div>
-                       <div className="bg-blue-600 text-white p-4 rounded-xl shadow-sm rounded-tr-none max-w-[80%]">
-                          <p className="text-sm leading-relaxed">
-                            Which platform has the highest dead stock right now?
-                          </p>
-                       </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                       <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 border border-purple-200">
-                          <Bot className="w-5 h-5 text-purple-600" />
-                       </div>
-                       <div className="bg-white p-4 rounded-xl shadow-sm border border-border rounded-tl-none max-w-[80%]">
-                          <p className="text-sm text-slate-700 leading-relaxed">
-                            Currently, <span className="font-bold text-accent">Amazon</span> represents the highest dead stock exposure with <span className="font-bold text-error">420 units</span> stuck for 30-60 days and <span className="font-bold text-error">85 units</span> stuck for over 120 days.
-                          </p>
-                       </div>
-                    </div>
-
+                  {/* Chat History Window */}
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+                    {chatMessages.map((msg, idx) => (
+                      <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[80%] p-3 rounded-lg text-sm ${msg.role === 'user' ? 'bg-purple-600 text-white rounded-tr-none' : 'bg-white border border-border text-slate-700 rounded-tl-none shadow-sm'}`}>
+                          {msg.content}
+                        </div>
+                      </div>
+                    ))}
+                    {isTyping && (
+                      <div className="flex justify-start">
+                        <div className="bg-white border border-border p-3 rounded-lg rounded-tl-none shadow-sm flex gap-1 items-center">
+                          <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                          <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                        </div>
+                      </div>
+                    )}
                   </div>
+
+                  {/* Functional Input Form */}
                   <div className="p-4 border-t border-border bg-white">
-                     <div className="flex gap-2">
-                        <input 
-                          type="text" 
-                          placeholder="Ask Gemini about your ERP metrics..." 
-                          className="flex-1 bg-slate-50 border border-border px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all"
-                          readOnly
-                        />
-                        <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center w-12 flex-shrink-0 shadow-sm border border-purple-700">
-                           <Send className="w-4 h-4" />
-                        </button>
-                     </div>
-                     <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
-                        <button className="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full font-medium transition-colors border border-border">Analyze SLA breaches today</button>
-                        <button className="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full font-medium transition-colors border border-border">Find low stock SKUs</button>
-                        <button className="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full font-medium transition-colors border border-border">Generate audit variance report</button>
-                     </div>
+                    <form onSubmit={handleSendMessage} className="flex gap-2">
+                      <input 
+                        type="text" 
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        placeholder="Ask about your ERP metrics..." 
+                        className="flex-1 bg-slate-50 border border-border px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all"
+                      />
+                      <button 
+                        type="submit" 
+                        disabled={!chatInput.trim() || isTyping}
+                        className="bg-purple-600 disabled:opacity-50 hover:bg-purple-700 text-white px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center w-12 flex-shrink-0 shadow-sm border border-purple-700">
+                        <Send className="w-4 h-4" />
+                      </button>
+                    </form>
+                    
+                    {/* Quick Trigger Buttons */}
+                    <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+                      <button type="button" onClick={() => setChatInput("Analyze GRN error rates")} className="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full font-medium transition-colors border border-border">Analyze GRN error rates</button>
+                      <button type="button" onClick={() => setChatInput("Find dead stock")} className="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full font-medium transition-colors border border-border">Find dead stock</button>
+                    </div>
                   </div>
+
                 </div>
               </div>
             )}
