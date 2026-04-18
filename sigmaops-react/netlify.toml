@@ -1,0 +1,9 @@
+[build]
+  base = "sigmaops-react"
+  command = "npm install && npm run build"
+  publish = "sigmaops-react/dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
